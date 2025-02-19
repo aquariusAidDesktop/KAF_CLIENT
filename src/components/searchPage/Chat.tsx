@@ -4,6 +4,7 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -15,73 +16,97 @@ import {
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import { io, Socket } from "socket.io-client";
 
-// Интерфейс для сообщений чата
 interface ChatMessage {
   sender: "assistant" | "user";
   text: string;
   searchType?: string;
+  loading?: boolean;
+  id?: string;
 }
 
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
 
+  // Основные цвета для сообщений
   const assistantBg = mode === "dark" ? "#343541" : "#F7F7F7";
   const assistantTextColor = mode === "dark" ? "#D1D5DB" : "#202123";
   const userBg = mode === "dark" ? "#444654" : "#E5E5EA";
   const userTextColor = mode === "dark" ? "#FFFFFF" : "#202123";
 
-  // Состояния для сообщений, текущего запроса и выбора типа поиска
   const [messages, setMessages] = useState<ChatMessage[]>([
     { sender: "assistant", text: "Чем могу помочь?" },
   ]);
   const [newMessage, setNewMessage] = useState("");
   const [searchType, setSearchType] = useState("1");
+  const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
 
-  // Хранение экземпляра сокета
   const socketRef = useRef<Socket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // При изменении списка сообщений плавно скроллим вниз
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   useEffect(() => {
-    // Инициализация подключения к Socket.IO серверу
-    socketRef.current = io("http://localhost:4000");
+    socketRef.current = io("http://localhost:5041");
 
-    // Слушатель получения сообщений от сервера
     socketRef.current.on("chat message", (msg: any) => {
-      // Если сервер отправляет строку
+      // Удаляем загрузочные сообщения
+      setMessages((prev) => prev.filter((m) => !m.loading));
+
       if (typeof msg === "string") {
         setMessages((prev) => [...prev, { sender: "assistant", text: msg }]);
-      }
-      // Если сервер отправляет объект с полем text
-      else if (typeof msg === "object" && msg.text) {
+      } else if (typeof msg === "object" && msg.text) {
         setMessages((prev) => [
           ...prev,
           { sender: "assistant", text: msg.text, searchType: msg.searchType },
         ]);
       }
+      setIsLoadingAnswer(false);
     });
 
-    // Очистка сокета при размонтировании компонента
+    socketRef.current.on("loading answer", (data: any) => {
+      // Обновляем текст загрузочного сообщения
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === "loading" ? { ...msg, text: data.text } : msg
+        )
+      );
+    });
+
     return () => {
       socketRef.current?.disconnect();
     };
   }, []);
 
-  // Функция отправки сообщения (запроса)
   const sendMessage = () => {
-    if (newMessage.trim() === "") return;
+    if (newMessage.trim() === "" || isLoadingAnswer) return;
 
     const payload = { text: newMessage, searchType };
-    // Отправка на сервер (при необходимости, сервер можно модифицировать для обработки объектов)
     socketRef.current?.emit("chat message", payload);
 
-    // Локальное обновление списка сообщений (от пользователя)
+    // Добавляем сообщение пользователя
     setMessages((prev) => [
       ...prev,
       { sender: "user", text: newMessage, searchType },
     ]);
+
+    // Добавляем сообщение загрузки с первым статусом
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "assistant",
+        text: "Вычисляем пространство векторов…",
+        loading: true,
+        id: "loading",
+      },
+    ]);
+
     setNewMessage("");
+    setIsLoadingAnswer(true);
   };
 
-  // Отправка по нажатию Enter (без Shift)
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -108,9 +133,21 @@ export default function Chat() {
           minHeight: 0,
           width: "100%",
           overflowY: "auto",
+          scrollBehavior: "smooth",
           pt: { xs: 2, sm: 4 },
           px: { xs: 2, sm: 4 },
-          pb: 16, // Отступ снизу для композера
+          pb: 16,
+          // Стилизация скроллбара для плавного появления
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "4px",
+          },
         }}
       >
         <Box
@@ -133,15 +170,31 @@ export default function Chat() {
             >
               <Box
                 sx={{
-                  backgroundColor: msg.sender === "user" ? userBg : assistantBg,
+                  backgroundColor:
+                    msg.sender === "user"
+                      ? userBg
+                      : msg.loading
+                      ? "#b0bec5" // читаемый фон для загрузочного сообщения
+                      : assistantBg,
                   color:
-                    msg.sender === "user" ? userTextColor : assistantTextColor,
+                    msg.sender === "user"
+                      ? userTextColor
+                      : msg.loading
+                      ? "#000000" // текст для загрузочного сообщения
+                      : assistantTextColor,
                   p: 2,
                   borderRadius: 2,
                   maxWidth: "80%",
                   boxShadow: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  opacity: msg.loading ? 0.7 : 1,
                 }}
               >
+                {msg.loading && (
+                  <CircularProgress size={16} sx={{ color: "inherit" }} />
+                )}
                 <Typography variant="body1">{msg.text}</Typography>
                 {msg.searchType && (
                   <Typography
@@ -155,6 +208,8 @@ export default function Chat() {
               </Box>
             </Box>
           ))}
+          {/* Контейнер для автоскролла */}
+          <div ref={messagesEndRef} />
         </Box>
       </Box>
 
@@ -203,6 +258,7 @@ export default function Chat() {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
+              disabled={isLoadingAnswer} // блокируем ввод, если идёт генерация ответа
               sx={{ maxHeight: "15vh", overflowY: "auto" }}
               InputProps={{
                 disableUnderline: true,
@@ -246,6 +302,7 @@ export default function Chat() {
                   label="Тип поиска"
                   value={searchType}
                   onChange={(e) => setSearchType(e.target.value)}
+                  disabled={isLoadingAnswer} // блокируем выбор типа, если идёт генерация ответа
                 >
                   <MenuItem value="1">Гибридный поиск (alpha: 0.7)</MenuItem>
                   <MenuItem value="2">
@@ -256,11 +313,15 @@ export default function Chat() {
               </FormControl>
               <Button
                 onClick={sendMessage}
-                disabled={newMessage.trim() === ""}
+                disabled={newMessage.trim() === "" || isLoadingAnswer}
                 variant="contained"
                 size="medium"
               >
-                Поиск
+                {isLoadingAnswer ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Поиск"
+                )}
               </Button>
             </Box>
           </Box>
