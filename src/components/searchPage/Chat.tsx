@@ -43,7 +43,6 @@ export default function Chat() {
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // При изменении списка сообщений плавно скроллим вниз
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,7 +51,6 @@ export default function Chat() {
     socketRef.current = io("http://localhost:5041");
 
     socketRef.current.on("chat message", (msg: any) => {
-      // Удаляем загрузочные сообщения
       setMessages((prev) => prev.filter((m) => !m.loading));
 
       if (typeof msg === "string") {
@@ -67,7 +65,6 @@ export default function Chat() {
     });
 
     socketRef.current.on("loading answer", (data: any) => {
-      // Обновляем текст загрузочного сообщения
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === "loading" ? { ...msg, text: data.text } : msg
@@ -86,13 +83,11 @@ export default function Chat() {
     const payload = { text: newMessage, searchType };
     socketRef.current?.emit("chat message", payload);
 
-    // Добавляем сообщение пользователя
     setMessages((prev) => [
       ...prev,
       { sender: "user", text: newMessage, searchType },
     ]);
 
-    // Добавляем сообщение загрузки с первым статусом
     setMessages((prev) => [
       ...prev,
       {
@@ -174,13 +169,13 @@ export default function Chat() {
                     msg.sender === "user"
                       ? userBg
                       : msg.loading
-                      ? "#b0bec5" // читаемый фон для загрузочного сообщения
+                      ? "#b0bec5" 
                       : assistantBg,
                   color:
                     msg.sender === "user"
                       ? userTextColor
                       : msg.loading
-                      ? "#000000" // текст для загрузочного сообщения
+                      ? "#000000" 
                       : assistantTextColor,
                   p: 2,
                   borderRadius: 2,
