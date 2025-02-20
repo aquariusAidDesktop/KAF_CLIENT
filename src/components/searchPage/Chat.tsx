@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import { io, Socket } from "socket.io-client";
+import ControlPanel from "./ControlPanel";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -27,7 +28,6 @@ interface ChatMessage {
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
 
-  // Основные цвета для сообщений
   const assistantBg = mode === "dark" ? "#343541" : "#F7F7F7";
   const assistantTextColor = mode === "dark" ? "#D1D5DB" : "#202123";
   const userBg = mode === "dark" ? "#444654" : "#E5E5EA";
@@ -50,7 +50,7 @@ export default function Chat() {
   useEffect(() => {
     socketRef.current = io("http://localhost:5041");
 
-    socketRef.current.on("chat message", (msg: any) => {
+    socketRef.current.on("chat message", (msg) => {
       setMessages((prev) => prev.filter((m) => !m.loading));
 
       if (typeof msg === "string") {
@@ -64,7 +64,7 @@ export default function Chat() {
       setIsLoadingAnswer(false);
     });
 
-    socketRef.current.on("loading answer", (data: any) => {
+    socketRef.current.on("loading answer", (data) => {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === "loading" ? { ...msg, text: data.text } : msg
@@ -132,7 +132,6 @@ export default function Chat() {
           pt: { xs: 2, sm: 4 },
           px: { xs: 2, sm: 4 },
           pb: 16,
-          // Стилизация скроллбара для плавного появления
           "&::-webkit-scrollbar": {
             width: "8px",
           },
@@ -169,13 +168,13 @@ export default function Chat() {
                     msg.sender === "user"
                       ? userBg
                       : msg.loading
-                      ? "#b0bec5" 
+                      ? "#b0bec5"
                       : assistantBg,
                   color:
                     msg.sender === "user"
                       ? userTextColor
                       : msg.loading
-                      ? "#000000" 
+                      ? "#000000"
                       : assistantTextColor,
                   p: 2,
                   borderRadius: 2,
@@ -209,119 +208,16 @@ export default function Chat() {
       </Box>
 
       {/* Композер: ввод запроса, выбор типа поиска и кнопка "Поиск" */}
-      <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "background.paper",
-          p: 2,
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: "800px",
-            mx: "auto",
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
-          {/* Текстовое поле */}
-          <Box
-            id="composer-background"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              cursor: "text",
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "24px",
-              px: 2,
-              py: 1,
-              transition: "all 150ms ease-in-out",
-              backgroundColor:
-                mode === "dark" ? "#303030" : "background.default",
-            }}
-          >
-            <TextField
-              fullWidth
-              multiline
-              placeholder="Искать в хранилище"
-              variant="standard"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isLoadingAnswer} // блокируем ввод, если идёт генерация ответа
-              sx={{ maxHeight: "15vh", overflowY: "auto" }}
-              InputProps={{
-                disableUnderline: true,
-                sx: {
-                  px: 0,
-                  py: 0,
-                  fontSize: "1.1rem",
-                  color: mode === "dark" ? "#D1D5DB" : "#202123",
-                },
-              }}
-            />
-          </Box>
-
-          {/* Ряд с выбором типа поиска и кнопкой "Поиск" */}
-          <Box
-            sx={{
-              display: "flex",
-              width: "100%",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 1,
-            }}
-          >
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                gap: 1,
-                mr: "1rem",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <FormControl
-                variant="outlined"
-                size="small"
-                sx={{ minWidth: 120 }}
-              >
-                <InputLabel>Тип поиска</InputLabel>
-                <Select
-                  label="Тип поиска"
-                  value={searchType}
-                  onChange={(e) => setSearchType(e.target.value)}
-                  disabled={isLoadingAnswer} // блокируем выбор типа, если идёт генерация ответа
-                >
-                  <MenuItem value="1">Гибридный поиск (alpha: 0.7)</MenuItem>
-                  <MenuItem value="2">
-                    Поиск по сходству векторов (смысловой поиск)
-                  </MenuItem>
-                  <MenuItem value="3">Поиск по ключевым словам</MenuItem>
-                </Select>
-              </FormControl>
-              <Button
-                onClick={sendMessage}
-                disabled={newMessage.trim() === "" || isLoadingAnswer}
-                variant="contained"
-                size="medium"
-              >
-                {isLoadingAnswer ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  "Поиск"
-                )}
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+      <ControlPanel
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        handleKeyDown={handleKeyDown}
+        isLoadingAnswer={isLoadingAnswer}
+        searchType={searchType}
+        setSearchType={setSearchType}
+        sendMessage={sendMessage}
+        mode={mode}
+      />
     </Grid>
   );
 }
