@@ -1,0 +1,50 @@
+services:
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    container_name: weaviate
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      ENABLE_MODULES: "text2vec-bm25"
+      PERSISTENCE_DATA_PATH: "/app/weaviate_data"
+      CLUSTER_HOSTNAME: "node1"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  bge-model-loader:
+    image: bash
+    container_name: bge-model-loader
+    depends_on:
+      - ollama
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10 &&
+      ollama pull bge-m3 &&
+      ollama pull bge-reranker-large &&
+      tail -f /dev/null
+      "
+
+  node-app:
+    build: .
+    container_name: node-app
+    restart: unless-stopped
+    depends_on:
+      - weaviate
+      - ollama
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+
+volumes:
+  ollama_data:
+    driver: local
