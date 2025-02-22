@@ -8,7 +8,6 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { ReactNode } from "react";
 
 export default function ControlPanel({
   newMessage,
