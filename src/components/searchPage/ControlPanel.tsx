@@ -28,13 +28,13 @@ any) {
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: "background.paper",
-          p: 2,
+          backgroundColor: "background",
+          p: 3,
         }}
       >
         <Box
           sx={{
-            maxWidth: "800px",
+            maxWidth: "1000px",
             mx: "auto",
             display: "flex",
             flexDirection: "column",
@@ -64,7 +64,9 @@ any) {
               placeholder="Искать в хранилище"
               variant="standard"
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={(e: { target: { value: any } }) =>
+                setNewMessage(e.target.value)
+              }
               onKeyDown={handleKeyDown}
               disabled={isLoadingAnswer}
               sx={{ maxHeight: "15vh", overflowY: "auto" }}
@@ -109,7 +111,9 @@ any) {
                 <Select
                   label="Тип поиска"
                   value={searchType}
-                  onChange={(e) => setSearchType(e.target.value)}
+                  onChange={(e: { target: { value: any } }) =>
+                    setSearchType(e.target.value)
+                  }
                   disabled={isLoadingAnswer}
                 >
                   <MenuItem value="1">Гибридный поиск (alpha: 0.7)</MenuItem>

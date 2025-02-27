@@ -1,23 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import ToggleColorMode from "./ThemeContext";
 import "normalize.css/normalize.css";
 import type { Metadata } from "next";
 import Providers from "./providers";
 import "./_assets/global.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Box, Grid } from "@mui/material";
+import ThemeChanger from "@/components/lib/ThemeChanger";
+import AbilitySide from "@/components/searchPage/AbilitySide";
 
 export const metadata: Metadata = {
-  title: "Властелин ОЧКА",
-  description: "Повелеваю твоим очком",
+  title: "Властелин",
+  description: "Text AI Chat Bot",
 };
 
 export default function RootLayout({
@@ -26,10 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="ru">
       <body>
         <Providers>
-          <ToggleColorMode>{children}</ToggleColorMode>
+          <ToggleColorMode>
+            <Box sx={{ height: "100vh" }}>
+              <Grid container sx={{ height: "100%", mt: { xs: 2, sm: 0 } }}>
+                <AbilitySide />
+                {children}
+              </Grid>
+            </Box>
+          </ToggleColorMode>
         </Providers>
       </body>
     </html>

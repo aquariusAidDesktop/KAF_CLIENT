@@ -3,7 +3,7 @@ import { ColorModeContext } from "@/app/ThemeContext";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { Box, Button, CssBaseline } from "@mui/material";
 import { useContext } from "react";
-import { CiLight } from "react-icons/ci";
+import { MdSunny } from "react-icons/md";
 import { MdNightlight } from "react-icons/md";
 
 export default function ThemeChanger() {
@@ -13,10 +13,14 @@ export default function ThemeChanger() {
   return (
     <>
       <CssBaseline enableColorScheme />
-      <Box sx={{ position: "fixed", top: "1rem", right: "1.2rem" }}>
-        <Button variant="outlined" onClick={toggleColorMode}>
+      <Box>
+        <Button
+          variant="outlined"
+          onClick={toggleColorMode}
+          sx={{ border: "2px solid" }}
+        >
           {mode === "dark" ? (
-            <CiLight style={{ fontSize: "1.5rem" }} />
+            <MdSunny style={{ fontSize: "1.5rem" }} />
           ) : (
             <MdNightlight style={{ fontSize: "1.5rem" }} />
           )}

@@ -124,7 +124,7 @@ export default function Chat() {
     <Grid
       item
       xs={12}
-      md={10}
+      md={11}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -157,7 +157,7 @@ export default function Chat() {
       >
         <Box
           sx={{
-            maxWidth: "800px",
+            maxWidth: "1000px",
             mx: "auto",
             display: "flex",
             flexDirection: "column",
