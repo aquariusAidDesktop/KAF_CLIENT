@@ -11,9 +11,9 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/material": "^6.4.5",
+    "@mui/material": "^6.4.6",
     "@reduxjs/toolkit": "^2.6.0",
-    "axios": "^1.8.0",
+    "axios": "^1.8.1",
     "framer-motion": "^12.4.7",
     "next": "15.1.7",
     "normalize.css": "^8.0.1",
