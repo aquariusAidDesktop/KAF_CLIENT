@@ -1,6 +1,6 @@
 "use client";
-import { ColorModeContext } from "@/app/ThemeContext";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { ColorModeContext } from "@/app/context/ThemeContext";
+import { useAppSelector } from "@/shared/redux/hooks";
 import { Box, Button, CssBaseline } from "@mui/material";
 import { useContext } from "react";
 import { MdSunny } from "react-icons/md";

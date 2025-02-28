@@ -64,7 +64,7 @@ any) {
               placeholder="Искать в хранилище"
               variant="standard"
               value={newMessage}
-              onChange={(e: { target: { value: any } }) =>
+              onChange={(e: { target: { value: unknown } }) =>
                 setNewMessage(e.target.value)
               }
               onKeyDown={handleKeyDown}
@@ -111,7 +111,7 @@ any) {
                 <Select
                   label="Тип поиска"
                   value={searchType}
-                  onChange={(e: { target: { value: any } }) =>
+                  onChange={(e: { target: { value: unknown } }) =>
                     setSearchType(e.target.value)
                   }
                   disabled={isLoadingAnswer}

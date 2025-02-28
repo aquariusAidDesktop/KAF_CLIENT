@@ -1,4 +1,3 @@
-// routesConfig.js
 import { FiBook, FiUpload, FiSearch } from "react-icons/fi";
 import { GoHistory } from "react-icons/go";
 

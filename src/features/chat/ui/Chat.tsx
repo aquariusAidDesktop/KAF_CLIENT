@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppSelector } from "@/shared/redux/hooks";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import { io, Socket } from "socket.io-client";

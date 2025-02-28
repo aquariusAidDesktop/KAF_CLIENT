@@ -3,8 +3,8 @@
 import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { toggleTheme } from "@/lib/redux/slices/themeSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { toggleTheme } from "@/shared/redux/slices/themeSlice";
+import { useAppDispatch, useAppSelector } from "@/shared/redux/hooks";
 
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => {},

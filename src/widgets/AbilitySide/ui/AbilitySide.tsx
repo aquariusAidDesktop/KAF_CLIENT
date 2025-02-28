@@ -3,8 +3,8 @@
 import { Grid, Box } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ThemeChanger from "../lib/ThemeChanger";
-import routesConfig from "@/app/routesConfig";
+import ThemeChanger from "@/features/themeToggler/ui/ThemeChanger";
+import routesConfig from "@/widgets/AbilitySide/model/routesConfig";
 
 export default function AbilitySide() {
   const pathname = usePathname();
