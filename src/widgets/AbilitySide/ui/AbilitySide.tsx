@@ -39,14 +39,15 @@ export default function AbilitySide() {
 
           return (
             <Link key={route.path} href={route.path}>
-              <Icon
-                style={{
-                  fontSize: active ? "2rem" : "1.7rem",
-                  cursor: "pointer",
-                  color: active ? "tomato" : "inherit",
-                }}
-                title={route.label} // Можно использовать как подсказку
-              />
+              <Box sx={{cursor: "pointer", p: "2px"}}>
+                <Icon
+                  style={{
+                    fontSize: active ? "2rem" : "1.7rem",
+                    color: active ? "tomato" : "inherit",
+                  }}
+                  title={route.label}
+                />
+              </Box>
             </Link>
           );
         })}

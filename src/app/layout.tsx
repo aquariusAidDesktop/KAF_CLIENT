@@ -1,7 +1,7 @@
-import ToggleColorMode from "./context/ThemeContext";
+import ToggleColorMode from "../features/themeToggler/model/ThemeContext";
 import { Box, Grid } from "@mui/material";
 import type { Metadata } from "next";
-import Providers from "./providers/providers";
+import Providers from "../shared/providers/providers";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
 import "normalize.css/normalize.css";
 import "./global.css";
