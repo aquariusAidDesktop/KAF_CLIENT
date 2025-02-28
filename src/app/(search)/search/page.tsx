@@ -1,5 +1,5 @@
 import { Box, Grid } from "@mui/material";
-import Chat from "@/features/chat/ui/Chat";
+import Chat from "@/widgets/Chat/ui/Chat";
 
 
 export default function Home() {
