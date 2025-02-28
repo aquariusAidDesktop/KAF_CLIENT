@@ -1,11 +1,10 @@
 import ToggleColorMode from "./ThemeContext";
-import "normalize.css/normalize.css";
+import { Box, Grid } from "@mui/material";
 import type { Metadata } from "next";
 import Providers from "./providers";
+import AbilitySide from "@/components/lib/AbilitySide";
+import "normalize.css/normalize.css";
 import "./_assets/global.css";
-import { Box, Grid } from "@mui/material";
-import ThemeChanger from "@/components/lib/ThemeChanger";
-import AbilitySide from "@/components/searchPage/AbilitySide";
 
 export const metadata: Metadata = {
   title: "Властелин",

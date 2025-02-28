@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["theme"], // сохраняем только срез с темой (при желании можно добавить и другие)
+  whitelist: ["theme"], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

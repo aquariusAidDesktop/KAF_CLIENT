@@ -1,12 +1,11 @@
-import { Box, Grid } from "@mui/material";
-import Chat from "@/components/searchPage/Chat";
-import AbilitySide from "@/components/searchPage/AbilitySide";
-import ThemeChanger from "@/components/lib/ThemeChanger";
+import { Box, Grid, Grid2 } from "@mui/material";
 
 export default function Home() {
   return (
     <>
-      <Chat />
+      <Grid2>
+
+      </Grid2>
     </>
   );
 }
