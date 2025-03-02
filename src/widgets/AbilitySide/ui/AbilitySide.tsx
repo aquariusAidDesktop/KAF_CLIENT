@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, Grid2 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeChanger from "@/features/themeToggler/ui/ThemeChanger";
@@ -11,11 +11,11 @@ export default function AbilitySide() {
 
   return (
     <Grid
-      item
+      container
       xs={0}
       md={1}
       sx={{
-        display: { xs: "none", md: "flex" },
+        display: "flex",
         flexDirection: "column",
         backgroundColor: "background.paper",
         borderRight: "1px solid",
@@ -39,7 +39,7 @@ export default function AbilitySide() {
 
           return (
             <Link key={route.path} href={route.path}>
-              <Box sx={{cursor: "pointer", p: "2px"}}>
+              <Box sx={{ cursor: "pointer", p: "2px" }}>
                 <Icon
                   style={{
                     fontSize: active ? "2rem" : "1.7rem",

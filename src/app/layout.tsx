@@ -1,5 +1,5 @@
 import ToggleColorMode from "../features/themeToggler/model/ThemeContext";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid2 } from "@mui/material";
 import type { Metadata } from "next";
 import Providers from "../shared/providers/providers";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
@@ -22,10 +22,10 @@ export default function RootLayout({
         <Providers>
           <ToggleColorMode>
             <Box sx={{ height: "100vh" }}>
-              <Grid container sx={{ height: "100%", mt: { xs: 2, sm: 0 } }}>
+              <Grid2 container sx={{ height: "100%", mt: { xs: 4, sm: 0 } }}>
                 <AbilitySide />
                 {children}
-              </Grid>
+              </Grid2>
             </Box>
           </ToggleColorMode>
         </Providers>
