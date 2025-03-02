@@ -24,7 +24,7 @@ export default function RootLayout({
             <Box sx={{ height: "100vh" }}>
               <Grid2 container sx={{ height: "100%", mt: { xs: 4, sm: 0 } }}>
                 <AbilitySide />
-                <UserStatus />
+                {/* <UserStatus /> */}
                 {children}
               </Grid2>
             </Box>

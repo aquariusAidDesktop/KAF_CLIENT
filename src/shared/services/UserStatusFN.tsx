@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/shared/redux/hooks";
@@ -14,7 +13,7 @@ export default function UserStatus() {
       typeof window !== "undefined" &&
       window.location.pathname !== "/"
     ) {
-      router.push("/");
+      router.push("/auth");
     }
   }, [user, router]);
 

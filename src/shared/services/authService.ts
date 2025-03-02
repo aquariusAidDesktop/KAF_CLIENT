@@ -1,60 +1,57 @@
 export const authService = {
   register: async (name: string, email: string, password: string) => {
-    return new Promise<{
-      id: string;
-      name: string;
-      email: string;
-      token: string;
-    }>((resolve, reject) => {
-      setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        if (users.find((user: any) => user.email === email)) {
-          return reject(new Error("Email already registered"));
-        }
+    // Получаем список пользователей или инициализируем пустой массив
+    const usersStr = localStorage.getItem("users") || "[]";
+    const users = JSON.parse(usersStr);
 
-        const newUser = {
-          id: crypto.randomUUID(),
-          name,
-          email,
-          token: crypto.randomUUID(),
-        };
-        users.push({ ...newUser, password });
-        localStorage.setItem("users", JSON.stringify(users));
-        resolve(newUser);
-      }, 1000);
-    });
+    // Проверяем, существует ли уже пользователь с таким email
+    if (users.some((user: any) => user.email === email)) {
+      throw new Error("Email already registered");
+    }
+
+    // Создаём нового пользователя с уникальными идентификаторами
+    const newUser = {
+      id: crypto.randomUUID(), // Современные браузеры поддерживают crypto.randomUUID()
+      name,
+      email,
+      token: crypto.randomUUID(),
+      password, // В продакшене пароль необходимо хэшировать!
+    };
+
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
+    // Возвращаем данные без пароля
+    return {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      token: newUser.token,
+    };
   },
 
   login: async (email: string, password: string) => {
-    return new Promise<{
-      id: string;
-      name: string;
-      email: string;
-      token: string;
-    }>((resolve, reject) => {
-      setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        const user = users.find(
-          (user: any) => user.email === email && user.password === password
-        );
-        if (!user) {
-          return reject(new Error("Invalid credentials"));
-        }
-        resolve({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          token: user.token,
-        });
-      }, 1000);
-    });
+    const usersStr = localStorage.getItem("users") || "[]";
+    const users = JSON.parse(usersStr);
+
+    // Ищем пользователя с совпадающими email и password
+    const user = users.find(
+      (user: any) => user.email === email && user.password === password
+    );
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    };
   },
 
   logout: async () => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
+    // Здесь можно добавить дополнительную логику очистки сессии, если необходимо
+    return;
   },
 };
