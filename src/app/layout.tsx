@@ -7,7 +7,7 @@ import "normalize.css/normalize.css";
 import "./global.css";
 
 export const metadata: Metadata = {
-  title: "Властелин",
+  title: "RAG Text Chat bot",
   description: "Text AI Chat Bot",
 };
 

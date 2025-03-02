@@ -3,9 +3,9 @@
 import { useAppSelector } from "@/shared/redux/hooks";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
-import { io, Socket } from "socket.io-client";
 import ReactMarkdown from "react-markdown";
 import ControlPanel from "./ControlPanel";
+import socketService from "@/shared/socket/socketService";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -29,8 +29,8 @@ export default function Chat() {
   const [newMessage, setNewMessage] = useState("");
   const [searchType, setSearchType] = useState("1");
   const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
 
-  const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,9 +38,21 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_API_URL);
+    const socket = socketService.connect(
+      process.env.NEXT_PUBLIC_SOCKET_API_URL!
+    );
 
-    socketRef.current.on("chat message", (msg) => {
+    socket.on("connect", () => {
+      setSocketConnected(true);
+      alert("Подключился к сокету");
+    });
+
+    socket.on("disconnect", () => {
+      setSocketConnected(false);
+      alert("Подключение к сокету отсутствует");
+    });
+
+    socket.on("chat message", (msg) => {
       setMessages((prev) => prev.filter((m) => m.id !== "loading"));
 
       if (typeof msg === "string") {
@@ -55,11 +67,10 @@ export default function Chat() {
           },
         ]);
       }
-
       setIsLoadingAnswer(false);
     });
 
-    socketRef.current.on("partial answer", (data) => {
+    socket.on("partial answer", (data) => {
       setMessages((prev) => {
         const loadingIndex = prev.findIndex((m) => m.id === "loading");
         if (loadingIndex !== -1) {
@@ -84,15 +95,20 @@ export default function Chat() {
     });
 
     return () => {
-      socketRef.current?.disconnect();
+      socketService.disconnect();
     };
   }, []);
 
   const sendMessage = () => {
+    if (!socketService.isConnected()) {
+      alert("Нет подключения к сокету");
+      return;
+    }
+
     if (newMessage.trim() === "" || isLoadingAnswer) return;
 
     const payload = { text: newMessage, searchType };
-    socketRef.current?.emit("chat message", payload);
+    socketService.emit("chat message", payload);
 
     setMessages((prev) => [
       ...prev,
@@ -122,8 +138,7 @@ export default function Chat() {
 
   return (
     <Grid
-      item
-      xs={12}
+      container
       md={11}
       sx={{
         display: "flex",
@@ -157,7 +172,7 @@ export default function Chat() {
       >
         <Box
           sx={{
-            maxWidth: "1000px",
+            maxWidth: "800px",
             mx: "auto",
             display: "flex",
             flexDirection: "column",

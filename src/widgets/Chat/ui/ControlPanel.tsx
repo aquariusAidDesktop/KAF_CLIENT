@@ -34,7 +34,7 @@ any) {
       >
         <Box
           sx={{
-            maxWidth: "1000px",
+            maxWidth: "800px",
             mx: "auto",
             display: "flex",
             flexDirection: "column",
