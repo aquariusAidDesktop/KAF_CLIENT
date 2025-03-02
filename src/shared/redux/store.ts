@@ -9,7 +9,7 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // localStorage для веба
+import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/userSlice";
 import themeReducer from "./slices/themeSlice";
 

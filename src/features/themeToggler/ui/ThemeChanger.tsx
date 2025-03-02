@@ -1,5 +1,5 @@
 "use client";
-import { ColorModeContext } from "@/features/themeToggler/model/ThemeContext";
+import { ColorModeContext } from "@/features/ThemeToggler/model/ThemeContext";
 import { useAppSelector } from "@/shared/redux/hooks";
 import { Box, Button, CssBaseline } from "@mui/material";
 import { useContext } from "react";

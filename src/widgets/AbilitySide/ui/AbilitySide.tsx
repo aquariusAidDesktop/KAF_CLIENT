@@ -3,7 +3,7 @@
 import { Grid, Box, Grid2 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ThemeChanger from "@/features/themeToggler/ui/ThemeChanger";
+import ThemeChanger from "@/features/ThemeToggler/ui/ThemeChanger";
 import routesConfig from "@/widgets/AbilitySide/model/routesConfig";
 
 export default function AbilitySide() {

@@ -1,14 +1,14 @@
-import ToggleColorMode from "../features/themeToggler/model/ThemeContext";
+import Providers from "@/shared/providers/providers";
+import ToggleColorMode from "../features/ThemeToggler/model/ThemeContext";
 import { Box, Grid2 } from "@mui/material";
-import type { Metadata } from "next";
-import Providers from "../shared/providers/providers";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
 import "normalize.css/normalize.css";
 import "./global.css";
+import UserStatus from "@/shared/services/UserStatusFN";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "RAG Text Chat bot",
-  description: "Text AI Chat Bot",
+  title: "бот",
 };
 
 export default function RootLayout({
@@ -24,6 +24,7 @@ export default function RootLayout({
             <Box sx={{ height: "100vh" }}>
               <Grid2 container sx={{ height: "100%", mt: { xs: 4, sm: 0 } }}>
                 <AbilitySide />
+                <UserStatus />
                 {children}
               </Grid2>
             </Box>
