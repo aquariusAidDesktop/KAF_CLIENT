@@ -15,7 +15,9 @@
     "@mui/material": "^6.4.6",
     "@reduxjs/toolkit": "^2.6.0",
     "axios": "^1.8.1",
+    "cookie": "^1.0.2",
     "framer-motion": "^12.4.7",
+    "jsonwebtoken": "^9.0.2",
     "next": "15.1.7",
     "normalize.css": "^8.0.1",
     "react": "^19.0.0",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.17.22",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

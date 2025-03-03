@@ -26,6 +26,10 @@ const userSlice = createSlice({
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.token = action.payload.token;
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("jwt", action.payload.token!);
+      }
     },
     logoutUser(state) {
       state.isAuthenticated = false;
@@ -33,9 +37,22 @@ const userSlice = createSlice({
       state.name = null;
       state.email = null;
       state.token = null;
+
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("jwt");
+      }
+    },
+    loadUserFromStorage(state) {
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          state.token = token;
+          state.isAuthenticated = true;
+        }
+      }
     },
   },
 });
 
-export const { setUser, logoutUser } = userSlice.actions;
+export const { setUser, logoutUser, loadUserFromStorage } = userSlice.actions;
 export default userSlice.reducer;

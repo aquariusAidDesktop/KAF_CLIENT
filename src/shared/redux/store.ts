@@ -10,7 +10,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import userReducer from "./slices/userSlice";
+import userReducer, { loadUserFromStorage } from "./slices/userSlice";
 import themeReducer from "./slices/themeSlice";
 
 const rootReducer = combineReducers({
@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["theme"], 
+  whitelist: ["theme"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -37,6 +37,10 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+if (typeof window !== "undefined") {
+  store.dispatch(loadUserFromStorage());
+}
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
