@@ -13,6 +13,7 @@ export function useAuth() {
     });
 
     const data = await response.json();
+
     if (response.ok) {
       dispatch(
         setUser({
@@ -53,5 +54,19 @@ export function useAuth() {
     dispatch(logoutUser());
   };
 
-  return { user, login, register, logout };
+  const fetchUser = async () => {
+    const response = await fetch("/api/auth/me", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${localStorage.getItem("user")}` },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      dispatch(setUser(data.user));
+    } else {
+      dispatch(logoutUser());
+    }
+  };
+
+  return { user, login, register, logout, fetchUser };
 }

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
   const id = Math.random().toString(36).substring(7);
 
-  const token = jwt.sign({ id, name, email }, SECRET_KEY, { expiresIn: "1h" });
+  const token = jwt.sign({ id, name, email, password }, SECRET_KEY, { expiresIn: "1h" });
 
   return NextResponse.json({ id, name, email, token });
 }

@@ -1,15 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import { useAuth } from "../model/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function AuthForm() {
-  const { login, register } = useAuth();
+  const { login, register, fetchUser } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +27,8 @@ export default function AuthForm() {
       } else {
         await login(email, password);
       }
+
+      router.push("/");
     } catch (err) {
       setError((err as Error).message);
     }

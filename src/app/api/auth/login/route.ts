@@ -11,9 +11,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = jwt.sign({ id: "123", name: "Test User", email }, SECRET_KEY, {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign(
+    { id: "1234", name: "Руслан", email, password },
+    SECRET_KEY,
+    {
+      expiresIn: "1h",
+    }
+  );
 
   const serialized = serialize("jwt", token, {
     httpOnly: true,

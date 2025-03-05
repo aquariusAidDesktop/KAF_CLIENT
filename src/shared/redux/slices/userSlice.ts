@@ -28,7 +28,7 @@ const userSlice = createSlice({
       state.token = action.payload.token;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("jwt", action.payload.token!);
+        localStorage.setItem("user", action.payload.token!);
       }
     },
     logoutUser(state) {
@@ -39,12 +39,12 @@ const userSlice = createSlice({
       state.token = null;
 
       if (typeof window !== "undefined") {
-        localStorage.removeItem("jwt");
+        localStorage.removeItem("user");
       }
     },
     loadUserFromStorage(state) {
       if (typeof window !== "undefined") {
-        const token = localStorage.getItem("jwt");
+        const token = localStorage.getItem("user");
         if (token) {
           state.token = token;
           state.isAuthenticated = true;

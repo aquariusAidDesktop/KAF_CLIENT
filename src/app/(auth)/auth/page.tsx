@@ -1,7 +1,7 @@
-import LoginForm from "@/features/LoginForm/ui/LoginForm";
-import RegisterForm from "@/features/RegisterForm/ui/RegisterForm";
+"use client";
 import AuthForm from "@/widgets/AuthForm/ui/AuthForm";
 import { Grid2 } from "@mui/material";
+import { useEffect } from "react";
 
 export default function Home() {
   return (
