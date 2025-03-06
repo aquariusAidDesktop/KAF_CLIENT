@@ -1,33 +1,23 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie";
+import bcrypt from "bcrypt";
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "supersecretkey";
+const SECRET_KEY = process.env.JWT_SECRET || "supersecretkey";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
-  if (email !== "test@test" || password !== "123") {
+  const dummyPasswordHash = await bcrypt.hash("123", 10);
+  if (
+    email !== "test@test" ||
+    !(await bcrypt.compare(password, dummyPasswordHash))
+  ) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = jwt.sign(
-    { id: "1234", name: "Руслан", email, password },
-    SECRET_KEY,
-    {
-      expiresIn: "1h",
-    }
-  );
+  const user = { id: "1234", name: "Руслан", email };
+  const token = jwt.sign(user, SECRET_KEY, { expiresIn: "1h" });
 
-  const serialized = serialize("jwt", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-  });
-
-  return NextResponse.json(
-    { success: true },
-    { headers: { "Set-Cookie": serialized } }
-  );
+  // Возвращаем токен в JSON-ответе, что позволяет сохранять его в localStorage
+  return NextResponse.json({ success: true, ...user, token });
 }

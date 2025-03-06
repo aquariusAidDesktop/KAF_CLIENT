@@ -51,13 +51,23 @@ export function useAuth() {
   };
 
   const logout = () => {
+    // Очищаем token из localStorage
+    localStorage.removeItem("token");
     dispatch(logoutUser());
   };
 
   const fetchUser = async () => {
+    // Получаем токен из localStorage
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      dispatch(logoutUser());
+      return;
+    }
+
     const response = await fetch("/api/auth/me", {
       method: "GET",
-      headers: { Authorization: `Bearer ${localStorage.getItem("user")}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     if (response.ok) {
