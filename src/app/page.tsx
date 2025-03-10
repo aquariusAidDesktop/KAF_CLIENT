@@ -1,3 +1,4 @@
+import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
 import { Box, Button, Grid2, Typography } from "@mui/material";
 import Link from "next/link";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -6,7 +7,7 @@ import { GoHistory } from "react-icons/go";
 
 export default function Home() {
   return (
-    <>
+    <ProtectedRoute>
       <Grid2
         container
         size="grow"
@@ -106,6 +107,6 @@ export default function Home() {
           </Box>
         </Grid2>
       </Grid2>
-    </>
+    </ProtectedRoute>
   );
 }

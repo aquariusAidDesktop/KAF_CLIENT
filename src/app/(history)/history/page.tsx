@@ -1,9 +1,12 @@
+import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
 import { Typography } from "@mui/material";
 
 export default function Home() {
   return (
     <>
-      <Typography>История чатов</Typography>
+      <ProtectedRoute>
+        <Typography>История чатов</Typography>
+      </ProtectedRoute>
     </>
   );
 }

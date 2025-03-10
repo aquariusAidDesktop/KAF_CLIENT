@@ -35,8 +35,8 @@ export default function UploadPage() {
     });
 
     try {
-      //   const uploadUrl = process.env.NEXT_PUBLIC_UPLOAD_URL;
-      const uploadUrl = "/api/upload";
+      const uploadUrl = process.env.NEXT_PUBLIC_UPLOAD_URL;
+      // const uploadUrl = "/api/upload";
       if (!uploadUrl) {
         throw new Error("Upload URL is not defined");
       }

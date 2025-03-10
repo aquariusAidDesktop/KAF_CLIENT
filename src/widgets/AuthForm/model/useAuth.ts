@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/redux/hooks";
 import { logoutUser, setUser } from "@/shared/redux/slices/userSlice";
 
 export function useAuth() {
-  const user = useAppSelector((state) => state.user);
+  const user = useAppSelector((state: { user: unknown }) => state.user);
   const dispatch = useAppDispatch();
 
   const login = async (email: string, password: string) => {
@@ -51,14 +51,12 @@ export function useAuth() {
   };
 
   const logout = () => {
-    // Очищаем token из localStorage
-    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     dispatch(logoutUser());
   };
 
   const fetchUser = async () => {
-    // Получаем токен из localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user");
 
     if (!token) {
       dispatch(logoutUser());
