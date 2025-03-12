@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface UserState {
+export interface UserState {
   isAuthenticated: boolean;
   id: string | null;
   name: string | null;
@@ -20,7 +20,10 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<Omit<UserState, "isAuthenticated">>) {
+    setUser(
+      state: UserState,
+      action: PayloadAction<Omit<UserState, "isAuthenticated">>
+    ) {
       state.isAuthenticated = true;
       state.id = action.payload.id;
       state.name = action.payload.name;
@@ -28,10 +31,10 @@ const userSlice = createSlice({
       state.token = action.payload.token;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", action.payload.token!);
+        localStorage.setItem("user", action.payload.token ?? "");
       }
     },
-    logoutUser(state) {
+    logoutUser(state: UserState) {
       state.isAuthenticated = false;
       state.id = null;
       state.name = null;
@@ -42,12 +45,14 @@ const userSlice = createSlice({
         localStorage.removeItem("user");
       }
     },
-    loadUserFromStorage(state) {
+    loadUserFromStorage(state: UserState) {
       if (typeof window !== "undefined") {
         const token = localStorage.getItem("user");
         if (token) {
           state.token = token;
           state.isAuthenticated = true;
+        } else {
+          console.warn("Токен не найден в localStorage");
         }
       }
     },

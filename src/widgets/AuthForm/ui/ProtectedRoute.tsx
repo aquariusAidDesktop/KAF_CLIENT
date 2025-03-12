@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/shared/redux/hooks";
+import { UserBadger } from "@/features/UserBadge/ui/UserBadge";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -18,5 +19,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [isAuthenticated, router]);
 
-  return isAuthenticated ? <>{children}</> : null;
+  return isAuthenticated ? (
+    <>
+      <UserBadger />
+      {children}
+    </>
+  ) : null;
 }

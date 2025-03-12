@@ -118,15 +118,15 @@ export default function UploadPage() {
         <input {...getInputProps()} />
         <CloudUploadIcon fontSize="large" color="action" />
         {isDragActive ? (
-          <Typography variant="body1" mt={2}>
+          <Typography variant="body1" component="p" mt={2}>
             Отпустите файлы, чтобы загрузить
           </Typography>
         ) : (
-          <Typography variant="body1" mt={2}>
+          <Typography variant="body1" component="p" mt={2}>
             Перетащите файлы сюда
           </Typography>
         )}
-        <Typography variant="body2" mt={1} color="text.secondary">
+        <Typography variant="body2" mt={1} color="text.secondary" component="p">
           Поддерживаемые форматы: PDF
         </Typography>
       </Box>
@@ -156,8 +156,6 @@ export default function UploadPage() {
           </Typography>
         </Box>
       )}
-
-      {/* Отображаем сообщение об ошибке, если оно есть */}
       {errorMessage && (
         <Box sx={{ mt: 2, maxWidth: 600 }}>
           <Typography variant="body2" color="error" align="center">

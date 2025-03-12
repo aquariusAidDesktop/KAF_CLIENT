@@ -4,8 +4,8 @@ import { Box, Grid2 } from "@mui/material";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
 import "normalize.css/normalize.css";
 import "./global.css";
-import UserStatus from "@/shared/services/UserStatusFN";
 import { Metadata } from "next";
+import { UserBadger } from "@/features/UserBadge/ui/UserBadge";
 
 export const metadata: Metadata = {
   title: "бот",
@@ -24,7 +24,6 @@ export default function RootLayout({
             <Box sx={{ height: "100vh" }}>
               <Grid2 container sx={{ height: "100%", mt: { xs: 0, sm: 0 } }}>
                 <AbilitySide />
-                {/* <UserStatus /> */}
                 {children}
               </Grid2>
             </Box>
