@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector } from "@/shared/redux/hooks";
 import { UserBadger } from "@/features/UserBadge/ui/UserBadge";
 
@@ -10,7 +10,9 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const pathname = usePathname();
   const router = useRouter();
+
   const { isAuthenticated } = useAppSelector((state) => state.user);
 
   useEffect(() => {
@@ -19,9 +21,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [isAuthenticated, router]);
 
+  const userBadger = ["/profile", "/auth"].includes(pathname);
+
   return isAuthenticated ? (
     <>
-      <UserBadger />
+      {!userBadger && <UserBadger />}
       {children}
     </>
   ) : null;

@@ -1,11 +1,11 @@
-import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
-import { Typography } from "@mui/material";
+import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
+import ProfilePage from "@/widgets/ProfilePage/ui/ProfilePage";
 
 export default function Home() {
   return (
     <>
       <ProtectedRoute>
-        <Typography>Профиль</Typography>
+        <ProfilePage />
       </ProtectedRoute>
     </>
   );

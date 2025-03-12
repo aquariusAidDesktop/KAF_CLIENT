@@ -1,6 +1,6 @@
 "use client";
 
-import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
+import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
 import { Box, Button, Grid2, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FaArrowRightLong } from "react-icons/fa6";

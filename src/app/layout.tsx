@@ -1,11 +1,10 @@
 import Providers from "@/shared/providers/providers";
-import ToggleColorMode from "../features/ThemeToggler/model/ThemeContext";
+import ToggleColorMode from "../shared/themeContext/ThemeContext";
 import { Box, Grid2 } from "@mui/material";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
 import "normalize.css/normalize.css";
 import "./global.css";
 import { Metadata } from "next";
-import { UserBadger } from "@/features/UserBadge/ui/UserBadge";
 
 export const metadata: Metadata = {
   title: "бот",

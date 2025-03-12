@@ -1,4 +1,4 @@
-import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
+import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
 import { Typography } from "@mui/material";
 
 export default function Home() {

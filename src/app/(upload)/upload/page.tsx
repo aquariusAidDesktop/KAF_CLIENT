@@ -1,4 +1,4 @@
-import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
+import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
 import UploadPage from "@/widgets/UploadPage/ui/UploadPage";
 import { Box, Grid, Typography } from "@mui/material";
 

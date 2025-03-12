@@ -1,9 +1,8 @@
 "use client";
 
-import { Grid, Box, Grid2 } from "@mui/material";
+import { Box, Grid2 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ThemeChanger from "@/features/ThemeToggler/ui/ThemeChanger";
 import routesConfig from "@/widgets/AbilitySide/model/routesConfig";
 
 export default function AbilitySide() {
@@ -20,7 +19,7 @@ export default function AbilitySide() {
         borderColor: "divider",
         justifyContent: "space-between",
         alignItems: "center",
-        p: 2,
+        p: 3,
       }}
     >
       <Box
@@ -40,7 +39,7 @@ export default function AbilitySide() {
               <Box sx={{ cursor: "pointer", p: "2px" }}>
                 <Icon
                   style={{
-                    fontSize: active ? "2rem" : "1.7rem",
+                    fontSize: active ? "1.7rem" : "1.7rem",
                     color: active ? "tomato" : "inherit",
                   }}
                   title={route.label}
@@ -50,7 +49,6 @@ export default function AbilitySide() {
           );
         })}
       </Box>
-      <ThemeChanger />
     </Grid2>
   );
 }

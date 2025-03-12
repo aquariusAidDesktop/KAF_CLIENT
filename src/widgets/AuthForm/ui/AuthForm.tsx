@@ -37,12 +37,14 @@ export default function AuthForm() {
   return (
     <Box
       sx={{
-        maxWidth: 400,
+        minHeight: "22rem",
+        width: "27rem",
+        maxWidth: "27rem",
         mx: "auto",
         p: 3,
         display: "flex",
         flexDirection: "column",
-        gap: 2,
+        gap: 4,
         border: "1px solid #ddd",
         borderRadius: "8px",
         boxShadow: 3,
@@ -97,9 +99,7 @@ export default function AuthForm() {
         variant="text"
         color="secondary"
       >
-        {isRegistering
-          ? "Уже есть аккаунт? Войти"
-          : "Нет аккаунта? Зарегистрироваться"}
+        {isRegistering ? "Войти" : "Зарегистрироваться"}
       </Button>
     </Box>
   );
