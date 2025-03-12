@@ -22,7 +22,7 @@ export default function RootLayout({
         <Providers>
           <ToggleColorMode>
             <Box sx={{ height: "100vh" }}>
-              <Grid2 container sx={{ height: "100%", mt: { xs: 4, sm: 0 } }}>
+              <Grid2 container sx={{ height: "100%", mt: { xs: 0, sm: 0 } }}>
                 <AbilitySide />
                 {/* <UserStatus /> */}
                 {children}

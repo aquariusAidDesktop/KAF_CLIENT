@@ -1,11 +1,15 @@
+"use client";
+
 import ProtectedRoute from "@/widgets/AuthForm/ui/ProtectedRoute";
 import { Box, Button, Grid2, Typography } from "@mui/material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FiUpload, FiSearch } from "react-icons/fi";
 import { GoHistory } from "react-icons/go";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <ProtectedRoute>
       <Grid2
@@ -34,8 +38,7 @@ export default function Home() {
         <Button
           variant="contained"
           sx={{ mt: "7vh" }}
-          component={Link}
-          href="/upload"
+          onClick={() => router.push("/upload")}
         >
           <Typography p={1}>Загрузить книги</Typography>
           <FaArrowRightLong />
@@ -59,6 +62,7 @@ export default function Home() {
               minWidth: "22%",
               maxWidth: "22%",
             }}
+            onClick={() => router.push("/upload")}
           >
             <FiUpload color="#2563EB" size={30} />
             <Typography mt={3} variant="h5">
@@ -68,6 +72,7 @@ export default function Home() {
               Поддержка PDF с возможностями предпросмотра
             </Typography>
           </Box>
+
           <Box
             sx={{
               backgroundColor: "background.paper",
@@ -77,6 +82,7 @@ export default function Home() {
               minWidth: "22%",
               maxWidth: "22%",
             }}
+            onClick={() => router.push("/search")}
           >
             <FiSearch color="#2563EB" size={30} />
             <Typography mt={3} variant="h5">
@@ -87,6 +93,7 @@ export default function Home() {
               словам
             </Typography>
           </Box>
+
           <Box
             sx={{
               backgroundColor: "background.paper",
@@ -96,6 +103,7 @@ export default function Home() {
               minWidth: "22%",
               maxWidth: "22%",
             }}
+            onClick={() => router.push("/history")}
           >
             <GoHistory color="#2563EB" size={30} />
             <Typography mt={3} variant="h5">

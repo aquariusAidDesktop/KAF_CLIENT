@@ -43,5 +43,11 @@
     "eslint": "^9.22.0",
     "eslint-config-next": "15.1.7",
     "typescript": "^5.8.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt",
+      "sharp"
+    ]
   }
 }

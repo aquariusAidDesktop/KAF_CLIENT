@@ -10,10 +10,8 @@ export default function AbilitySide() {
   const pathname = usePathname();
 
   return (
-    <Grid
+    <Grid2
       container
-      xs={0}
-      md={1}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -22,7 +20,7 @@ export default function AbilitySide() {
         borderColor: "divider",
         justifyContent: "space-between",
         alignItems: "center",
-        p: 3,
+        p: 2,
       }}
     >
       <Box
@@ -53,6 +51,6 @@ export default function AbilitySide() {
         })}
       </Box>
       <ThemeChanger />
-    </Grid>
+    </Grid2>
   );
 }
