@@ -16,10 +16,16 @@
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.2",
     "bcrypt": "^5.1.1",
+    "child_process": "^1.0.2",
     "cookie": "^1.0.2",
     "framer-motion": "^12.4.10",
     "jsonwebtoken": "^9.0.2",
+    "kerberos": "^2.2.1",
+    "mongodb": "6.14.2",
+    "msnodesql": "^0.2.1",
+    "mssql": "^11.0.1",
     "next": "15.1.7",
+    "node-piper": "^1.0.0",
     "normalize.css": "^8.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -30,7 +36,9 @@
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
     "socket.io-client": "^4.8.1",
+    "tds": "^0.1.0",
     "uuid": "^11.1.0",
+    "vosk": "^0.3.39",
     "yup": "^1.6.1"
   },
   "devDependencies": {
@@ -41,6 +49,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/react-redux": "^7.1.34",
+    "@types/vosk": "^0.3.1",
     "eslint": "^9.22.0",
     "eslint-config-next": "15.1.7",
     "typescript": "^5.8.2"
@@ -48,6 +57,12 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "bcrypt",
+      "bson",
+      "core-js",
+      "ffi-napi",
+      "kerberos",
+      "msnodesql",
+      "ref-napi",
       "sharp"
     ]
   }
