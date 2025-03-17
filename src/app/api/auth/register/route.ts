@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const SECRET_KEY = process.env.JWT_SECRET || "supersecretkey";
 

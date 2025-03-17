@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const SECRET_KEY = process.env.JWT_SECRET || "supersecretkey";
 
@@ -18,6 +18,5 @@ export async function POST(req: Request) {
   const user = { id: "1234", name: "Руслан", email };
   const token = jwt.sign(user, SECRET_KEY, { expiresIn: "1h" });
 
-  // Возвращаем токен в JSON-ответе, что позволяет сохранять его в localStorage
   return NextResponse.json({ success: true, ...user, token });
 }

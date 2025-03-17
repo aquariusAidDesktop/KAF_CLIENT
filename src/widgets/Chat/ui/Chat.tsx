@@ -43,13 +43,11 @@ export default function Chat() {
     );
 
     socket.on("connect", () => {
-      setSocketConnected(true);
-      alert("Подключился к сокету");
+      console.log(`Подключился к сокету: ${socketService.on.name}`);
     });
 
     socket.on("disconnect", () => {
-      setSocketConnected(false);
-      alert("Подключение к сокету отсутствует");
+      console.log(`Отключился от сокета: ${socketService.on.name}`);
     });
 
     socket.on("chat message", (msg) => {
@@ -101,7 +99,7 @@ export default function Chat() {
 
   const sendMessage = () => {
     if (!socketService.isConnected()) {
-      alert("Нет подключения к сокету");
+      console.log("Нет подключения к сокету");
       return;
     }
 
@@ -222,7 +220,7 @@ export default function Chat() {
                     />
                   )}
                   {msg.loading ? (
-                    <Typography variant="body1">{msg.text}</Typography>
+                    <Typography variant="body2">{msg.text}</Typography>
                   ) : (
                     <ReactMarkdown
                       components={{
