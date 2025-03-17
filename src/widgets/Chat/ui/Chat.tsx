@@ -37,6 +37,16 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const speakText = (text: string) => {
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "ru-RU";
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn("SpeechSynthesis API не поддерживается вашим браузером.");
+    }
+  };
+
   useEffect(() => {
     const socket = socketService.connect(
       process.env.NEXT_PUBLIC_SOCKET_API_URL!
@@ -55,6 +65,7 @@ export default function Chat() {
 
       if (typeof msg === "string") {
         setMessages((prev) => [...prev, { sender: "assistant", text: msg }]);
+        speakText(msg);
       } else if (typeof msg === "object" && msg.text) {
         setMessages((prev) => [
           ...prev,
@@ -64,6 +75,7 @@ export default function Chat() {
             searchType: msg.searchType,
           },
         ]);
+        speakText(msg.text);
       }
       setIsLoadingAnswer(false);
     });
@@ -224,6 +236,39 @@ export default function Chat() {
                   ) : (
                     <ReactMarkdown
                       components={{
+                        h1: ({ node, ...props }) => (
+                          <h1
+                            style={{
+                              fontSize: "2em",
+                              margin: "0.67em 0",
+                              fontWeight: 600,
+                            }}
+                            {...props}
+                          />
+                        ),
+                        h2: ({ node, ...props }) => (
+                          <h2
+                            style={{
+                              fontSize: "1.75em",
+                              margin: "0.75em 0",
+                              fontWeight: 600,
+                            }}
+                            {...props}
+                          />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3
+                            style={{
+                              fontSize: "1.5em",
+                              margin: "0.75em 0",
+                              fontWeight: 600,
+                            }}
+                            {...props}
+                          />
+                        ),
+                        p: ({ node, ...props }) => (
+                          <p style={{ lineHeight: 1.6 }} {...props} />
+                        ),
                         ul: ({ node, ...props }) => (
                           <ul
                             style={{
@@ -242,6 +287,114 @@ export default function Chat() {
                               marginBottom: "0.5em",
                               paddingLeft: "1.4em",
                               listStylePosition: "outside",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        code: ({
+                          node,
+                          inline,
+                          className,
+                          children,
+                          ...props
+                        }: any) => {
+                          // Извлекаем ref, чтобы избежать конфликта с типами pre/code
+                          const { ref, ...restProps } = props;
+                          if (!inline) {
+                            return (
+                              <pre
+                                style={{
+                                  overflowX: "auto",
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                  maxWidth: "100%",
+                                  background:
+                                    msg.sender === "assistant"
+                                      ? assistantBg
+                                      : userBg,
+                                  padding: "1em",
+                                  borderRadius: "4px",
+                                }}
+                                {...restProps}
+                              >
+                                <code className={className}>{children}</code>
+                              </pre>
+                            );
+                          } else {
+                            return (
+                              <code
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                  background: "rgba(27,31,35,0.05)",
+                                  padding: "0.2em 0.4em",
+                                  borderRadius: "3px",
+                                }}
+                                className={className}
+                                {...restProps}
+                              >
+                                {children}
+                              </code>
+                            );
+                          }
+                        },
+                        blockquote: ({ node, ...props }) => (
+                          <blockquote
+                            style={{
+                              borderLeft: "4px solid #dfe2e5",
+                              paddingLeft: "1em",
+                              color: "#6a737d",
+                              fontStyle: "italic",
+                              margin: "0.5em 0",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        a: ({ node, ...props }) => (
+                          <a
+                            style={{
+                              color: "#0366d6",
+                              textDecoration: "none",
+                              borderBottom: "1px solid #0366d6",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        table: ({ node, ...props }) => (
+                          <table
+                            style={{
+                              borderCollapse: "collapse",
+                              width: "100%",
+                              margin: "1em 0",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        th: ({ node, ...props }) => (
+                          <th
+                            style={{
+                              border: "1px solid #ddd",
+                              padding: "0.5em",
+                              background: "#f6f8fa",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        td: ({ node, ...props }) => (
+                          <td
+                            style={{
+                              border: "1px solid #ddd",
+                              padding: "0.5em",
+                            }}
+                            {...props}
+                          />
+                        ),
+                        img: ({ node, ...props }) => (
+                          <img
+                            style={{
+                              maxWidth: "100%",
+                              borderRadius: "4px",
+                              margin: "1em 0",
                             }}
                             {...props}
                           />
@@ -268,7 +421,6 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </Box>
       </Box>
-
       <ControlPanel
         newMessage={newMessage}
         setNewMessage={setNewMessage}

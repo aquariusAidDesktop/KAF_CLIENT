@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "types/**/*.d.ts"
-  ],
+, "src/widgets/VoiceInput/model/OfflineVoiceInput.ts"  ],
   "exclude": ["node_modules"]
 }

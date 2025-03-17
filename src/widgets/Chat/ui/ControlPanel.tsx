@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -8,6 +9,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
 
 export default function ControlPanel({
   newMessage,
@@ -18,10 +20,65 @@ export default function ControlPanel({
   setSearchType,
   sendMessage,
   mode,
-}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-any) {
+}: any) {
+  const [listening, setListening] = useState(false);
+
+  // Обёртка для безопасного обновления newMessage
+  const safeSetNewMessage = (text: string) => {
+    try {
+      setNewMessage(text);
+    } catch (err) {
+      console.error("Ошибка обновления newMessage:", err);
+    }
+  };
+
+  // Обработчик изменения input с отловом ошибок
+  const safeHandleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    try {
+      safeSetNewMessage(e.target.value);
+    } catch (err) {
+      console.error("Ошибка при изменении input:", err);
+    }
+  };
+
+  // Обработчик нажатия клавиш
+  const safeHandleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    try {
+      handleKeyDown(e);
+    } catch (err) {
+      console.error("Ошибка в обработчике keyDown:", err);
+    }
+  };
+
+  // Обёртка для отправки сообщения
+  const safeSendMessage = () => {
+    try {
+      sendMessage();
+    } catch (err) {
+      console.error("Ошибка отправки сообщения:", err);
+    }
+  };
+
   return (
     <>
+      {/* Монтируем компонент офлайн-распознавания */}
+      <OfflineVoiceInput
+        onResult={(text) => {
+          try {
+            safeSetNewMessage(text);
+          } catch (err) {
+            console.error(
+              "Ошибка при получении результата голосового ввода:",
+              err
+            );
+          }
+        }}
+        listening={listening}
+        setListening={setListening}
+      />
+
       <Box
         sx={{
           position: "sticky",
@@ -64,10 +121,8 @@ any) {
               placeholder="Искать в хранилище"
               variant="standard"
               value={newMessage}
-              onChange={(e: { target: { value: unknown } }) =>
-                setNewMessage(e.target.value)
-              }
-              onKeyDown={handleKeyDown}
+              onChange={safeHandleChange}
+              onKeyDown={safeHandleKeyDown}
               disabled={isLoadingAnswer}
               sx={{ maxHeight: "15vh", overflowY: "auto" }}
               InputProps={{
@@ -110,20 +165,26 @@ any) {
                 <Select
                   label="Тип поиска"
                   value={searchType}
-                  onChange={(e: { target: { value: unknown } }) =>
-                    setSearchType(e.target.value)
-                  }
+                  onChange={(e) => {
+                    try {
+                      setSearchType(e.target.value as string);
+                    } catch (err) {
+                      console.error("Ошибка при смене типа поиска:", err);
+                    }
+                  }}
                   disabled={isLoadingAnswer}
                 >
                   <MenuItem value="1">Гибридный поиск (alpha: 0.7)</MenuItem>
                   <MenuItem value="2">
-                    Поиск по сходству векторов (смысловой поиск)
+                    Семантический (по сходству векторов)
                   </MenuItem>
-                  <MenuItem value="3">Поиск по ключевым словам</MenuItem>
+                  <MenuItem value="3">Ключевые слова</MenuItem>
                 </Select>
               </FormControl>
+
+              {/* Кнопка для отправки сообщения */}
               <Button
-                onClick={sendMessage}
+                onClick={safeSendMessage}
                 disabled={newMessage.trim() === "" || isLoadingAnswer}
                 variant="contained"
                 size="medium"
@@ -135,6 +196,21 @@ any) {
                 )}
               </Button>
             </Box>
+
+            {/* Кнопка для включения/выключения микрофона */}
+            <Button
+              onClick={() => {
+                try {
+                  setListening((prev: boolean) => !prev);
+                } catch (err) {
+                  console.error("Ошибка при переключении прослушивания:", err);
+                }
+              }}
+              variant={listening ? "outlined" : "contained"}
+              color={listening ? "error" : "primary"}
+            >
+              {listening ? "Стоп" : "Голос"}
+            </Button>
           </Box>
         </Box>
       </Box>
