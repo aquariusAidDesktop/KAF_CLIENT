@@ -10,6 +10,8 @@ import {
   TextField,
 } from "@mui/material";
 import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
+import { IoMdMicOff } from "react-icons/io";
+import { IoMdMic } from "react-icons/io";
 
 export default function ControlPanel({
   newMessage,
@@ -23,7 +25,6 @@ export default function ControlPanel({
 }: any) {
   const [listening, setListening] = useState(false);
 
-  // Обёртка для безопасного обновления newMessage
   const safeSetNewMessage = (text: string) => {
     try {
       setNewMessage(text);
@@ -32,7 +33,6 @@ export default function ControlPanel({
     }
   };
 
-  // Обработчик изменения input с отловом ошибок
   const safeHandleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -43,7 +43,6 @@ export default function ControlPanel({
     }
   };
 
-  // Обработчик нажатия клавиш
   const safeHandleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     try {
       handleKeyDown(e);
@@ -52,7 +51,6 @@ export default function ControlPanel({
     }
   };
 
-  // Обёртка для отправки сообщения
   const safeSendMessage = () => {
     try {
       sendMessage();
@@ -63,7 +61,6 @@ export default function ControlPanel({
 
   return (
     <>
-      {/* Монтируем компонент офлайн-распознавания */}
       <OfflineVoiceInput
         onResult={(text) => {
           try {
@@ -182,34 +179,40 @@ export default function ControlPanel({
                 </Select>
               </FormControl>
 
-              {/* Кнопка для отправки сообщения */}
               <Button
-                onClick={safeSendMessage}
-                disabled={newMessage.trim() === "" || isLoadingAnswer}
-                variant="contained"
-                size="medium"
+                onClick={() => {
+                  try {
+                    setListening((prev: boolean) => !prev);
+                  } catch (err) {
+                    console.error(
+                      "Ошибка при переключении прослушивания:",
+                      err
+                    );
+                  }
+                }}
+                variant={listening ? "outlined" : "contained"}
+                color={listening ? "error" : "primary"}
+                // sx={{fontSize: "1.4rem"}}
               >
-                {isLoadingAnswer ? (
-                  <CircularProgress size={24} color="inherit" />
+                {listening ? (
+                  <IoMdMicOff size={24} color="inherit" />
                 ) : (
-                  "Поиск"
+                  <IoMdMic size={24} color="inherit" />
                 )}
               </Button>
             </Box>
 
-            {/* Кнопка для включения/выключения микрофона */}
             <Button
-              onClick={() => {
-                try {
-                  setListening((prev: boolean) => !prev);
-                } catch (err) {
-                  console.error("Ошибка при переключении прослушивания:", err);
-                }
-              }}
-              variant={listening ? "outlined" : "contained"}
-              color={listening ? "error" : "primary"}
+              onClick={safeSendMessage}
+              disabled={newMessage.trim() === "" || isLoadingAnswer}
+              variant="contained"
+              size="medium"
             >
-              {listening ? "Стоп" : "Голос"}
+              {isLoadingAnswer ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Поиск"
+              )}
             </Button>
           </Box>
         </Box>

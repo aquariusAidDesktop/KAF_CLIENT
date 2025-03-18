@@ -19,8 +19,6 @@ export default function OfflineVoiceInput({
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const scriptNodeRef = useRef<ScriptProcessorNode | null>(null);
   const recognizerRef = useRef<any>(null);
-  // Сохраняем последнее обновленное значение промежуточного результата,
-  // чтобы не обновлять input, если оно не изменилось
   const lastPartialRef = useRef<string>("");
 
   const stopListening = () => {
@@ -82,7 +80,21 @@ export default function OfflineVoiceInput({
       console.log("Инициализация аудио контекста...");
       audioContextRef.current = new AudioContext({ sampleRate: 16000 });
       console.log("Запрос доступа к микрофону...");
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err: any) {
+        if (err.message && err.message.includes("Requested device not found")) {
+          alert(
+            "Микрофон не найден. Пожалуйста, подключите микрофон и попробуйте снова."
+          );
+        } else {
+          console.error("Ошибка доступа к микрофону:", err);
+        }
+        setListening(false);
+        return;
+      }
       mediaStreamRef.current = stream;
 
       const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -101,9 +113,11 @@ export default function OfflineVoiceInput({
         return;
       }
 
-      // При финальном результате обновляем input окончательным текстом и останавливаем запись
       recognizerRef.current.on("result", (result: any) => {
         try {
+          if (lastPartialRef.current) {
+            lastPartialRef.current = "";
+          }
           if (result && result.result && result.result.text) {
             console.log("Финальный результат:", result.result.text);
             onResult(result.result.text);
@@ -114,7 +128,6 @@ export default function OfflineVoiceInput({
         }
       });
 
-      // При каждом событии partialresult сразу обновляем input, если результат изменился
       recognizerRef.current.on("partialresult", (result: any) => {
         try {
           if (result && result.result && result.result.partial) {
