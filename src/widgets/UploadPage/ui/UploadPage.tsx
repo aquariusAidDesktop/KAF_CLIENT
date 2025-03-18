@@ -8,7 +8,6 @@ import {
   Button,
   LinearProgress,
   useTheme,
-  Grid2,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
@@ -17,8 +16,8 @@ import { FileRejection } from "react-dropzone";
 export default function UploadPage() {
   const theme = useTheme();
 
-  const [isUploading, setIsUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -36,7 +35,6 @@ export default function UploadPage() {
 
     try {
       const uploadUrl = process.env.NEXT_PUBLIC_UPLOAD_URL;
-      // const uploadUrl = "/api/upload";
       if (!uploadUrl) {
         throw new Error("Upload URL is not defined");
       }
@@ -52,9 +50,17 @@ export default function UploadPage() {
       });
 
       console.log("Загрузка завершена:", response.data);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "Ошибка при загрузке файла"
+        );
+      } else if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Произошла неизвестная ошибка");
+      }
       console.error("Ошибка при загрузке:", error);
-      setErrorMessage(error.message || "Ошибка при загрузке файла");
     } finally {
       setIsUploading(false);
     }
@@ -83,12 +89,14 @@ export default function UploadPage() {
   ));
 
   return (
-    <Grid2
-      container
-      size={"grow"}
-      direction="column"
-      alignItems="center"
-      sx={{ p: 4 }}
+    <Box
+      sx={{
+        p: 4,
+        width: "90vw",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       <Typography variant="h3" textAlign="center">
         Загрузите книги
@@ -163,6 +171,6 @@ export default function UploadPage() {
           </Typography>
         </Box>
       )}
-    </Grid2>
+    </Box>
   );
 }

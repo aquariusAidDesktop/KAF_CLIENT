@@ -16,7 +16,7 @@ export default function AuthForm() {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

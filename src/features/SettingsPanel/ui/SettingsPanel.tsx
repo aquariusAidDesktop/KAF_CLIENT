@@ -54,7 +54,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
 
   useEffect(() => {
     toggleColorMode();
-  }, [themeMode]);
+  }, [themeMode, toggleColorMode]);
 
   const renderGeneralSettings = () => (
     <>

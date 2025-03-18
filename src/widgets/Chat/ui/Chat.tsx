@@ -5,7 +5,7 @@ import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import ControlPanel from "./ControlPanel";
-import socketService from "@/shared/socket/socketService";
+import { socketService } from "@/shared/socket/socketService";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -26,10 +26,12 @@ export default function Chat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { sender: "assistant", text: "Чем могу помочь?" },
   ]);
-  const [newMessage, setNewMessage] = useState("");
-  const [searchType, setSearchType] = useState("1");
-  const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
+
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [searchType, setSearchType] = useState<string>("1");
+  const [isLoadingSearch, setIsLoadingSearch] = useState<boolean>(false);
+  const [isLoadingVoice, setIsLoadingVoice] = useState<boolean>(false);
+  const [socketConnected, setSocketConnected] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -53,42 +55,45 @@ export default function Chat() {
     );
 
     socket.on("connect", () => {
-      console.log(`Подключился к сокету: ${socketService.on.name}`);
+      console.log(`Подключился к сокету`);
+      setSocketConnected(true);
     });
 
     socket.on("disconnect", () => {
-      console.log(`Отключился от сокета: ${socketService.on.name}`);
+      console.log(`Отключился от сокета`);
+      setSocketConnected(false);
     });
 
-    socket.on("chat message", (msg) => {
-      setMessages((prev) => prev.filter((m) => m.id !== "loading"));
+    socket.on(
+      "chat message",
+      (msg: string | { text: string; searchType?: string }) => {
+        setMessages((prev: ChatMessage[]) =>
+          prev.filter((m) => m.id !== "loading")
+        );
 
-      if (typeof msg === "string") {
-        setMessages((prev) => [...prev, { sender: "assistant", text: msg }]);
-        speakText(msg);
-      } else if (typeof msg === "object" && msg.text) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: "assistant",
-            text: msg.text,
-            searchType: msg.searchType,
-          },
-        ]);
-        speakText(msg.text);
+        if (typeof msg === "string") {
+          setMessages((prev: ChatMessage[]) => [
+            ...prev,
+            { sender: "assistant", text: msg },
+          ]);
+          speakText(msg);
+        } else if (typeof msg === "object" && msg.text) {
+          setMessages((prev: ChatMessage[]) => [
+            ...prev,
+            { sender: "assistant", text: msg.text, searchType: msg.searchType },
+          ]);
+          speakText(msg.text);
+        }
+        setIsLoadingSearch(false);
       }
-      setIsLoadingAnswer(false);
-    });
+    );
 
-    socket.on("partial answer", (data) => {
-      setMessages((prev) => {
+    socket.on("partial answer", (data: { text: string }) => {
+      setMessages((prev: ChatMessage[]) => {
         const loadingIndex = prev.findIndex((m) => m.id === "loading");
         if (loadingIndex !== -1) {
           const updated = [...prev];
-          updated[loadingIndex] = {
-            ...updated[loadingIndex],
-            text: data.text,
-          };
+          updated[loadingIndex] = { ...updated[loadingIndex], text: data.text };
           return updated;
         } else {
           return [
@@ -115,17 +120,17 @@ export default function Chat() {
       return;
     }
 
-    if (newMessage.trim() === "" || isLoadingAnswer) return;
+    if (newMessage.trim() === "" || isLoadingSearch) return;
 
     const payload = { text: newMessage, searchType };
     socketService.emit("chat message", payload);
 
-    setMessages((prev) => [
+    setMessages((prev: ChatMessage[]) => [
       ...prev,
       { sender: "user", text: newMessage, searchType },
     ]);
 
-    setMessages((prev) => [
+    setMessages((prev: ChatMessage[]) => [
       ...prev,
       {
         sender: "assistant",
@@ -136,7 +141,7 @@ export default function Chat() {
     ]);
 
     setNewMessage("");
-    setIsLoadingAnswer(true);
+    setIsLoadingSearch(true);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -157,7 +162,6 @@ export default function Chat() {
         height: "100%",
       }}
     >
-      {/* Область со списком сообщений */}
       <Box
         sx={{
           flex: 1,
@@ -168,16 +172,6 @@ export default function Chat() {
           pt: { xs: 2, sm: 4 },
           px: { xs: 2, sm: 4 },
           pb: 16,
-          "&::-webkit-scrollbar": {
-            width: "8px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "rgba(0,0,0,0.2)",
-            borderRadius: "4px",
-          },
         }}
       >
         <Box
@@ -189,9 +183,7 @@ export default function Chat() {
             gap: 2,
           }}
         >
-          {messages.map((msg, index) => {
-            const isFinalAssistant = msg.sender === "assistant" && !msg.loading;
-
+          {messages.map((msg: ChatMessage, index) => {
             return (
               <Box
                 key={index}
@@ -216,7 +208,7 @@ export default function Chat() {
                         ? "#000000"
                         : assistantTextColor,
                     p: 2,
-                    borderRadius: isFinalAssistant ? 1 : 2,
+                    borderRadius: 2,
                     boxShadow: msg.loading ? 1 : "none",
                     maxWidth: "80%",
                     display: "flex",
@@ -231,180 +223,7 @@ export default function Chat() {
                       sx={{ color: "inherit", mb: 1 }}
                     />
                   )}
-                  {msg.loading ? (
-                    <Typography variant="body2">{msg.text}</Typography>
-                  ) : (
-                    <ReactMarkdown
-                      components={{
-                        h1: ({ node, ...props }) => (
-                          <h1
-                            style={{
-                              fontSize: "2em",
-                              margin: "0.67em 0",
-                              fontWeight: 600,
-                            }}
-                            {...props}
-                          />
-                        ),
-                        h2: ({ node, ...props }) => (
-                          <h2
-                            style={{
-                              fontSize: "1.75em",
-                              margin: "0.75em 0",
-                              fontWeight: 600,
-                            }}
-                            {...props}
-                          />
-                        ),
-                        h3: ({ node, ...props }) => (
-                          <h3
-                            style={{
-                              fontSize: "1.5em",
-                              margin: "0.75em 0",
-                              fontWeight: 600,
-                            }}
-                            {...props}
-                          />
-                        ),
-                        p: ({ node, ...props }) => (
-                          <p style={{ lineHeight: 1.6 }} {...props} />
-                        ),
-                        ul: ({ node, ...props }) => (
-                          <ul
-                            style={{
-                              marginTop: "0.5em",
-                              marginBottom: "0.5em",
-                              paddingLeft: "1.4em",
-                              listStylePosition: "outside",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        ol: ({ node, ...props }) => (
-                          <ol
-                            style={{
-                              marginTop: "0.5em",
-                              marginBottom: "0.5em",
-                              paddingLeft: "1.4em",
-                              listStylePosition: "outside",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        code: ({
-                          node,
-                          inline,
-                          className,
-                          children,
-                          ...props
-                        }: any) => {
-                          // Извлекаем ref, чтобы избежать конфликта с типами pre/code
-                          const { ref, ...restProps } = props;
-                          if (!inline) {
-                            return (
-                              <pre
-                                style={{
-                                  overflowX: "auto",
-                                  whiteSpace: "pre-wrap",
-                                  wordWrap: "break-word",
-                                  maxWidth: "100%",
-                                  background:
-                                    msg.sender === "assistant"
-                                      ? assistantBg
-                                      : userBg,
-                                  padding: "1em",
-                                  borderRadius: "4px",
-                                }}
-                                {...restProps}
-                              >
-                                <code className={className}>{children}</code>
-                              </pre>
-                            );
-                          } else {
-                            return (
-                              <code
-                                style={{
-                                  whiteSpace: "pre-wrap",
-                                  wordWrap: "break-word",
-                                  background: "rgba(27,31,35,0.05)",
-                                  padding: "0.2em 0.4em",
-                                  borderRadius: "3px",
-                                }}
-                                className={className}
-                                {...restProps}
-                              >
-                                {children}
-                              </code>
-                            );
-                          }
-                        },
-                        blockquote: ({ node, ...props }) => (
-                          <blockquote
-                            style={{
-                              borderLeft: "4px solid #dfe2e5",
-                              paddingLeft: "1em",
-                              color: "#6a737d",
-                              fontStyle: "italic",
-                              margin: "0.5em 0",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        a: ({ node, ...props }) => (
-                          <a
-                            style={{
-                              color: "#0366d6",
-                              textDecoration: "none",
-                              borderBottom: "1px solid #0366d6",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        table: ({ node, ...props }) => (
-                          <table
-                            style={{
-                              borderCollapse: "collapse",
-                              width: "100%",
-                              margin: "1em 0",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        th: ({ node, ...props }) => (
-                          <th
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "0.5em",
-                              background: "#f6f8fa",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        td: ({ node, ...props }) => (
-                          <td
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "0.5em",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        img: ({ node, ...props }) => (
-                          <img
-                            style={{
-                              maxWidth: "100%",
-                              borderRadius: "4px",
-                              margin: "1em 0",
-                            }}
-                            {...props}
-                          />
-                        ),
-                      }}
-                    >
-                      {msg.text}
-                    </ReactMarkdown>
-                  )}
-
+                  <Typography variant="body2">{msg.text}</Typography>
                   {msg.searchType && (
                     <Typography
                       variant="caption"
@@ -425,7 +244,10 @@ export default function Chat() {
         newMessage={newMessage}
         setNewMessage={setNewMessage}
         handleKeyDown={handleKeyDown}
-        isLoadingAnswer={isLoadingAnswer}
+        isLoadingSearch={isLoadingSearch}
+        setIsLoadingSearch={setIsLoadingSearch}
+        isLoadingVoice={isLoadingVoice}
+        setIsLoadingVoice={setIsLoadingVoice}
         searchType={searchType}
         setSearchType={setSearchType}
         sendMessage={sendMessage}

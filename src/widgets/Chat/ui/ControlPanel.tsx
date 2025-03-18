@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   Box,
   Button,
@@ -9,21 +9,37 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { IoMdMicOff, IoMdMic } from "react-icons/io";
 import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
-import { IoMdMicOff } from "react-icons/io";
-import { IoMdMic } from "react-icons/io";
+
+interface ControlPanelProps {
+  newMessage: string;
+  setNewMessage: Dispatch<SetStateAction<string>>;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+  isLoadingSearch: boolean;
+  setIsLoadingSearch: Dispatch<SetStateAction<boolean>>;
+  isLoadingVoice: boolean;
+  setIsLoadingVoice: Dispatch<SetStateAction<boolean>>;
+  searchType: string;
+  setSearchType: Dispatch<SetStateAction<string>>;
+  sendMessage: () => void;
+  mode: "light" | "dark";
+}
 
 export default function ControlPanel({
   newMessage,
   setNewMessage,
   handleKeyDown,
-  isLoadingAnswer,
+  isLoadingSearch,
+  setIsLoadingSearch,
+  isLoadingVoice,
+  setIsLoadingVoice,
   searchType,
   setSearchType,
   sendMessage,
   mode,
-}: any) {
-  const [listening, setListening] = useState(false);
+}: ControlPanelProps) {
+  const [listening, setListening] = useState<boolean>(false);
 
   const safeSetNewMessage = (text: string) => {
     try {
@@ -33,49 +49,17 @@ export default function ControlPanel({
     }
   };
 
-  const safeHandleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    try {
-      safeSetNewMessage(e.target.value);
-    } catch (err) {
-      console.error("Ошибка при изменении input:", err);
-    }
-  };
-
-  const safeHandleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    try {
-      handleKeyDown(e);
-    } catch (err) {
-      console.error("Ошибка в обработчике keyDown:", err);
-    }
-  };
-
-  const safeSendMessage = () => {
-    try {
-      sendMessage();
-    } catch (err) {
-      console.error("Ошибка отправки сообщения:", err);
-    }
-  };
-
   return (
     <>
       <OfflineVoiceInput
         onResult={(text) => {
-          try {
-            safeSetNewMessage(text);
-          } catch (err) {
-            console.error(
-              "Ошибка при получении результата голосового ввода:",
-              err
-            );
-          }
+          console.log("Получен результат распознавания:", text);
+          safeSetNewMessage(text);
         }}
         listening={listening}
         setListening={setListening}
+        setIsLoadingAnswer={setIsLoadingVoice}
       />
-
       <Box
         sx={{
           position: "sticky",
@@ -118,9 +102,9 @@ export default function ControlPanel({
               placeholder="Искать в хранилище"
               variant="standard"
               value={newMessage}
-              onChange={safeHandleChange}
-              onKeyDown={safeHandleKeyDown}
-              disabled={isLoadingAnswer}
+              onChange={(e) => safeSetNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isLoadingSearch}
               sx={{ maxHeight: "15vh", overflowY: "auto" }}
               InputProps={{
                 disableUnderline: true,
@@ -162,14 +146,8 @@ export default function ControlPanel({
                 <Select
                   label="Тип поиска"
                   value={searchType}
-                  onChange={(e) => {
-                    try {
-                      setSearchType(e.target.value as string);
-                    } catch (err) {
-                      console.error("Ошибка при смене типа поиска:", err);
-                    }
-                  }}
-                  disabled={isLoadingAnswer}
+                  onChange={(e) => setSearchType(e.target.value)}
+                  disabled={isLoadingSearch}
                 >
                   <MenuItem value="1">Гибридный поиск (alpha: 0.7)</MenuItem>
                   <MenuItem value="2">
@@ -180,21 +158,13 @@ export default function ControlPanel({
               </FormControl>
 
               <Button
-                onClick={() => {
-                  try {
-                    setListening((prev: boolean) => !prev);
-                  } catch (err) {
-                    console.error(
-                      "Ошибка при переключении прослушивания:",
-                      err
-                    );
-                  }
-                }}
+                onClick={() => setListening((prev) => !prev)}
                 variant={listening ? "outlined" : "contained"}
                 color={listening ? "error" : "primary"}
-                // sx={{fontSize: "1.4rem"}}
               >
-                {listening ? (
+                {isLoadingVoice ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : listening ? (
                   <IoMdMicOff size={24} color="inherit" />
                 ) : (
                   <IoMdMic size={24} color="inherit" />
@@ -203,12 +173,12 @@ export default function ControlPanel({
             </Box>
 
             <Button
-              onClick={safeSendMessage}
-              disabled={newMessage.trim() === "" || isLoadingAnswer}
+              onClick={sendMessage}
+              disabled={newMessage.trim() === "" || isLoadingSearch}
               variant="contained"
               size="medium"
             >
-              {isLoadingAnswer ? (
+              {isLoadingSearch ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
                 "Поиск"

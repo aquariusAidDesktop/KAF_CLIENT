@@ -1,170 +1,98 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Vosk from "vosk-browser";
+import { useEffect, useRef } from "react";
 
 interface OfflineVoiceInputProps {
   onResult: (text: string) => void;
   listening: boolean;
   setListening: (val: boolean) => void;
+  // Добавляем callback для установки состояния загрузки
+  setIsLoadingAnswer?: (val: boolean) => void;
 }
 
 export default function OfflineVoiceInput({
   onResult,
   listening,
   setListening,
+  setIsLoadingAnswer,
 }: OfflineVoiceInputProps) {
-  const [model, setModel] = useState<any>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
-  const scriptNodeRef = useRef<ScriptProcessorNode | null>(null);
-  const recognizerRef = useRef<any>(null);
-  const lastPartialRef = useRef<string>("");
-
-  const stopListening = () => {
-    try {
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
-        mediaStreamRef.current = null;
-      }
-      if (scriptNodeRef.current) {
-        scriptNodeRef.current.disconnect();
-        scriptNodeRef.current = null;
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-      }
-      recognizerRef.current = null;
-      console.log("Прослушивание остановлено.");
-    } catch (err) {
-      console.error("Ошибка остановки распознавания:", err);
-    }
-  };
-
-  useEffect(() => {
-    const loadModel = async () => {
-      try {
-        console.log("Загрузка модели...");
-        const m = await Vosk.createModel(
-          "/models/vosk-model-small-ru-0.22.tar.gz"
-        );
-        setModel(m);
-        console.log("Модель загружена.");
-      } catch (err) {
-        console.error("Ошибка загрузки модели Vosk:", err);
-      }
-    };
-    loadModel();
-
-    return () => {
-      stopListening();
-    };
-  }, []);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     if (listening) {
-      startListening();
+      startRecording();
     } else {
-      stopListening();
+      stopRecording();
     }
+    return () => {
+      stopRecording();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listening]);
 
-  const startListening = async () => {
-    if (!model) {
-      console.warn("Модель Vosk не загружена");
-      setListening(false);
-      return;
-    }
+  const startRecording = async () => {
     try {
-      console.log("Инициализация аудио контекста...");
-      audioContextRef.current = new AudioContext({ sampleRate: 16000 });
-      console.log("Запрос доступа к микрофону...");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recordedChunksRef.current = [];
 
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch (err: any) {
-        if (err.message && err.message.includes("Requested device not found")) {
-          alert(
-            "Микрофон не найден. Пожалуйста, подключите микрофон и попробуйте снова."
-          );
-        } else {
-          console.error("Ошибка доступа к микрофону:", err);
-        }
-        setListening(false);
-        return;
-      }
-      mediaStreamRef.current = stream;
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm;codecs=opus",
+      });
+      mediaRecorderRef.current = mediaRecorder;
 
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      scriptNodeRef.current = audioContextRef.current.createScriptProcessor(
-        4096,
-        1,
-        1
-      );
-
-      try {
-        recognizerRef.current = new model.KaldiRecognizer(16000);
-        console.log("Распознаватель создан.");
-      } catch (err) {
-        console.error("Ошибка создания распознавателя:", err);
-        setListening(false);
-        return;
-      }
-
-      recognizerRef.current.on("result", (result: any) => {
-        try {
-          if (lastPartialRef.current) {
-            lastPartialRef.current = "";
-          }
-          if (result && result.result && result.result.text) {
-            console.log("Финальный результат:", result.result.text);
-            onResult(result.result.text);
-            setListening(false);
-          }
-        } catch (innerErr) {
-          console.error("Ошибка обработки финального результата:", innerErr);
+      mediaRecorder.addEventListener("dataavailable", (event) => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
         }
       });
 
-      recognizerRef.current.on("partialresult", (result: any) => {
+      mediaRecorder.addEventListener("stop", async () => {
+        // Устанавливаем флаг загрузки перед отправкой запроса
+        if (setIsLoadingAnswer) setIsLoadingAnswer(true);
+        const audioBlob = new Blob(recordedChunksRef.current, {
+          type: "audio/webm",
+        });
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "recording.webm");
+
         try {
-          if (result && result.result && result.result.partial) {
-            const partialText = result.result.partial;
-            if (partialText !== lastPartialRef.current) {
-              lastPartialRef.current = partialText;
-              console.log("Промежуточный результат:", partialText);
-              onResult(partialText);
-            }
+          const res = await fetch("/api/recognize", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          console.log("Ответ от сервера:", data);
+
+          if (data?.result?.text) {
+            onResult(data.result.text);
+          } else {
+            onResult("");
           }
-        } catch (innerErr) {
-          console.error(
-            "Ошибка обработки промежуточного результата:",
-            innerErr
-          );
+        } catch (err) {
+          console.error("Ошибка при отправке аудио:", err);
+        } finally {
+          // Снимаем флаг загрузки после завершения обработки
+          if (setIsLoadingAnswer) setIsLoadingAnswer(false);
         }
       });
 
-      recognizerRef.current.on("error", (error: any) => {
-        console.error("Ошибка распознавания:", error);
-      });
-
-      scriptNodeRef.current.onaudioprocess = (event) => {
-        try {
-          const audioBuffer = event.inputBuffer;
-          recognizerRef.current.acceptWaveform(audioBuffer);
-        } catch (error) {
-          console.error("Ошибка обработки аудио потока:", error);
-        }
-      };
-
-      source.connect(scriptNodeRef.current);
-      scriptNodeRef.current.connect(audioContextRef.current.destination);
-      console.log("Прослушивание начато.");
+      mediaRecorder.start();
     } catch (err) {
-      console.error("Ошибка доступа к микрофону или инициализации аудио:", err);
+      console.error("Ошибка доступа к микрофону:", err);
       setListening(false);
+    }
+  };
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream
+        .getTracks()
+        .forEach((track) => track.stop());
     }
   };
 

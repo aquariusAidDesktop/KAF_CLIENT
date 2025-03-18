@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 class SocketService {
   private socket: Socket | null = null;
 
-  public connect(url: string) {
+  public connect(url: string): Socket {
     if (!this.socket) {
       this.socket = io(url);
     }
@@ -14,22 +14,23 @@ class SocketService {
     return this.socket?.connected ?? false;
   }
 
-  public disconnect() {
+  public disconnect(): void {
     this.socket?.disconnect();
     this.socket = null;
   }
 
-  public on(event: string, callback: (...args: any[]) => void) {
+  public on<T>(event: string, callback: (data: T) => void): void {
     this.socket?.on(event, callback);
   }
 
-  public off(event: string, callback?: (...args: any[]) => void) {
+  public off<T>(event: string, callback?: (data: T) => void): void {
     this.socket?.off(event, callback);
   }
 
-  public emit(event: string, data?: any) {
+  public emit<T>(event: string, data?: T): void {
     this.socket?.emit(event, data);
   }
 }
 
-export default new SocketService();
+// Экспортируем именованный объект вместо анонимного
+export const socketService = new SocketService();
