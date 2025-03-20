@@ -14,6 +14,7 @@ import {
   Typography,
   Select,
   MenuItem,
+  Switch,
 } from "@mui/material";
 import {
   Settings as SettingsIcon,
@@ -29,6 +30,10 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { ColorModeContext } from "@/shared/themeContext/ThemeContext";
 import { useAuth } from "@/widgets/AuthForm/model/useAuth";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/shared/redux/store";
+import { toggleVoiceInput } from "@/shared/redux/slices/voiceSlice";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -44,8 +49,13 @@ const menuItems = [
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
   const { toggleColorMode } = useContext(ColorModeContext);
+  const dispatch = useDispatch();
   const { logout } = useAuth();
   const theme = useTheme();
+
+  const isVoiceInputEnabled = useSelector(
+    (state: RootState) => state.voice.isVoiceInputEnabled
+  );
 
   const [themeMode, setThemeMode] = useState("dark");
   const [language, setLanguage] = useState("ru");
@@ -108,6 +118,20 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
           <MenuItem value="ru">Русский</MenuItem>
           <MenuItem value="en">English</MenuItem>
         </Select>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography>Голосовой ввод</Typography>
+        <Switch
+          checked={isVoiceInputEnabled}
+          onChange={() => dispatch(toggleVoiceInput())}
+        />
       </Box>
     </>
   );

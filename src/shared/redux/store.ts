@@ -12,16 +12,18 @@ import {
 import storage from "redux-persist/lib/storage";
 import userReducer, { loadUserFromStorage } from "./slices/userSlice";
 import themeReducer from "./slices/themeSlice";
+import { voiceReducer } from "./slices/voiceSlice";
 
 const rootReducer = combineReducers({
   user: userReducer,
   theme: themeReducer,
+  voice: voiceReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["theme"],
+  whitelist: ["theme", "voice"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

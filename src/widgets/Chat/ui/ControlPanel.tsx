@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import { IoMdMicOff, IoMdMic } from "react-icons/io";
 import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
+import { useSelector } from "react-redux";
+import { RootState } from "@/shared/redux/store";
 
 interface ControlPanelProps {
   newMessage: string;
@@ -41,6 +43,10 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   const [listening, setListening] = useState<boolean>(false);
 
+  const isVoiceInputEnabled = useSelector(
+    (state: RootState) => state.voice.isVoiceInputEnabled
+  );
+
   const safeSetNewMessage = (text: string) => {
     try {
       setNewMessage(text);
@@ -51,15 +57,17 @@ export default function ControlPanel({
 
   return (
     <>
-      <OfflineVoiceInput
-        onResult={(text) => {
-          console.log("Получен результат распознавания:", text);
-          safeSetNewMessage(text);
-        }}
-        listening={listening}
-        setListening={setListening}
-        setIsLoadingAnswer={setIsLoadingVoice}
-      />
+      {isVoiceInputEnabled && (
+        <OfflineVoiceInput
+          onResult={(text) => {
+            console.log("Получен результат распознавания:", text);
+            safeSetNewMessage(text);
+          }}
+          listening={listening}
+          setListening={setListening}
+          setIsLoadingAnswer={setIsLoadingVoice}
+        />
+      )}
       <Box
         sx={{
           position: "sticky",
@@ -157,19 +165,21 @@ export default function ControlPanel({
                 </Select>
               </FormControl>
 
-              <Button
-                onClick={() => setListening((prev) => !prev)}
-                variant={listening ? "outlined" : "contained"}
-                color={listening ? "error" : "primary"}
-              >
-                {isLoadingVoice ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : listening ? (
-                  <IoMdMicOff size={24} color="inherit" />
-                ) : (
-                  <IoMdMic size={24} color="inherit" />
-                )}
-              </Button>
+              {isVoiceInputEnabled && (
+                <Button
+                  onClick={() => setListening((prev) => !prev)}
+                  variant={listening ? "outlined" : "contained"}
+                  color={listening ? "error" : "primary"}
+                >
+                  {isLoadingVoice ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : listening ? (
+                    <IoMdMicOff size={24} color="inherit" />
+                  ) : (
+                    <IoMdMic size={24} color="inherit" />
+                  )}
+                </Button>
+              )}
             </Box>
 
             <Button
