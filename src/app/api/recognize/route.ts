@@ -9,7 +9,7 @@ let model: Model | null = null;
 
 function getModel(): Model {
   if (!model) {
-    model = new Model("./models/vosk-model-small-ru-0.22");
+    model = new Model("./models/vosk-model-ru-0.22");
     console.log("Модель Vosk успешно загружена");
   }
   return model;
@@ -17,7 +17,6 @@ function getModel(): Model {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    // 1. Извлекаем Blob из formData
     const formData = await req.formData();
     const audioFile = formData.get("audio");
 
@@ -28,11 +27,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 2. Превращаем Blob в Buffer
     const webmArrayBuffer = await audioFile.arrayBuffer();
     const webmBuffer = Buffer.from(webmArrayBuffer);
 
-    // 3. Вызываем ffmpeg для конвертации WebM -> PCM (16kHz, 16bit, mono)
     const ffmpeg = spawn("ffmpeg", [
       "-i",
       "pipe:0",
