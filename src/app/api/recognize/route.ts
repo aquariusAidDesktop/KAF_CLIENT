@@ -9,7 +9,7 @@ let model: Model | null = null;
 
 function getModel(): Model {
   if (!model) {
-    model = new Model("./models/vosk-model-ru-0.22");
+    model = new Model("./models/vosk-model-small-ru-0.22");
     console.log("Модель Vosk успешно загружена");
   }
   return model;
