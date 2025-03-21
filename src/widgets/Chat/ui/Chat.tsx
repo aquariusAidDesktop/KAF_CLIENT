@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -18,15 +19,14 @@ interface ChatMessage {
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
 
-  const assistantBg = mode === "dark" ? "#343541" : "#F7F7F7";
-  const assistantTextColor = mode === "dark" ? "#D1D5DB" : "#202123";
+  const assistantBg = mode === "dark" ? "#242633" : "#F7F7F7";
+  const assistantTextColor = mode === "dark" ? "#f5f5f5" : "#202123";
   const userBg = mode === "dark" ? "#444654" : "#E5E5EA";
-  const userTextColor = mode === "dark" ? "#FFFFFF" : "#202123";
+  const userTextColor = mode === "dark" ? "#e8f1ff" : "#202123";
 
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { sender: "assistant", text: "Чем могу помочь?" },
+    { sender: "assistant", text: "Чем помочь сегодня?" },
   ]);
-
   const [newMessage, setNewMessage] = useState<string>("");
   const [searchType, setSearchType] = useState<string>("1");
   const [isLoadingSearch, setIsLoadingSearch] = useState<boolean>(false);
@@ -36,7 +36,13 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && !lastMessage.loading) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   }, [messages]);
 
   const speakText = (text: string) => {
@@ -55,12 +61,12 @@ export default function Chat() {
     );
 
     socket.on("connect", () => {
-      console.log(`Подключился к сокету`);
+      console.log(`Подключился к сокету: ${socketService.on.name}`);
       setSocketConnected(true);
     });
 
     socket.on("disconnect", () => {
-      console.log(`Отключился от сокета`);
+      console.log(`Отключился от сокета: ${socketService.on.name}`);
       setSocketConnected(false);
     });
 
@@ -172,6 +178,16 @@ export default function Chat() {
           pt: { xs: 2, sm: 4 },
           px: { xs: 2, sm: 4 },
           pb: 16,
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "4px",
+          },
         }}
       >
         <Box
@@ -184,6 +200,7 @@ export default function Chat() {
           }}
         >
           {messages.map((msg: ChatMessage, index) => {
+            const isFinalAssistant = msg.sender === "assistant" && !msg.loading;
             return (
               <Box
                 key={index}
@@ -208,7 +225,12 @@ export default function Chat() {
                         ? "#000000"
                         : assistantTextColor,
                     p: 2,
-                    borderRadius: 2,
+                    borderRadius:
+                      msg.sender === "assistant"
+                        ? isFinalAssistant
+                          ? 1
+                          : 2
+                        : 2,
                     boxShadow: msg.loading ? 1 : "none",
                     maxWidth: "80%",
                     display: "flex",
@@ -217,13 +239,20 @@ export default function Chat() {
                     opacity: msg.loading ? 0.7 : 1,
                   }}
                 >
-                  {msg.loading && (
-                    <CircularProgress
-                      size={16}
-                      sx={{ color: "inherit", mb: 1 }}
-                    />
+                  {msg.loading ? (
+                    <>
+                      <CircularProgress
+                        size={16}
+                        sx={{ color: "inherit", mb: 1 }}
+                      />
+                      <MarkdownRenderer content={msg.text} mode={mode} />
+                    </>
+                  ) : msg.sender === "assistant" ? (
+                    <MarkdownRenderer content={msg.text} mode={mode} />
+                  ) : (
+                    <Typography variant="body2">{msg.text}</Typography>
                   )}
-                  <Typography variant="body2">{msg.text}</Typography>
+
                   {msg.searchType && (
                     <Typography
                       variant="caption"

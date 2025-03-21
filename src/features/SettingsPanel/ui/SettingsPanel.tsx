@@ -232,10 +232,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
         <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
           <Box
             sx={{
-              width: 240,
+              width: "14vw",
               backgroundColor: theme.palette.background.paper,
               color: theme.palette.text.primary,
-              p: 1,
             }}
           >
             <List>
@@ -271,7 +270,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
             </List>
           </Box>
 
-          <Box sx={{ flexGrow: 1, px: 3, color: theme.palette.text.primary }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              height: "30vh",
+              px: 2,
+              color: theme.palette.text.primary,
+              overflowY: "auto",
+              scrollBehavior: "smooth",
+            }}
+          >
             {renderContent()}
           </Box>
         </Box>
