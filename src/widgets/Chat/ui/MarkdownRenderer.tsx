@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import TypewriterText from "./TypewriterText"; // убедись, что путь верный
+import TypewriterText from "./TypewriterText";
 
 interface MarkdownRendererProps {
   content: string;

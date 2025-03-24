@@ -13,6 +13,7 @@ import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { useRouter } from "next/navigation";
+import TypewriterText from "./TypewriterText"; // 👈 добавлено
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -68,8 +69,6 @@ export default function Chat() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "ru-RU";
       window.speechSynthesis.speak(utterance);
-    } else {
-      console.warn("SpeechSynthesis API не поддерживается вашим браузером.");
     }
   };
 
@@ -91,18 +90,13 @@ export default function Chat() {
     socket.on(
       "chat message",
       (msg: string | { text: string; searchType?: string }) => {
-        setMessages((prev: ChatMessage[]) =>
-          prev.filter((m) => m.id !== "loading")
-        );
+        setMessages((prev) => prev.filter((m) => m.id !== "loading"));
 
         if (typeof msg === "string") {
-          setMessages((prev: ChatMessage[]) => [
-            ...prev,
-            { sender: "assistant", text: msg },
-          ]);
+          setMessages((prev) => [...prev, { sender: "assistant", text: msg }]);
           speakText(msg);
         } else if (typeof msg === "object" && msg.text) {
-          setMessages((prev: ChatMessage[]) => [
+          setMessages((prev) => [
             ...prev,
             { sender: "assistant", text: msg.text, searchType: msg.searchType },
           ]);
@@ -113,7 +107,7 @@ export default function Chat() {
     );
 
     socket.on("partial answer", (data: { text: string }) => {
-      setMessages((prev: ChatMessage[]) => {
+      setMessages((prev) => {
         const loadingIndex = prev.findIndex((m) => m.id === "loading");
         if (loadingIndex !== -1) {
           const updated = [...prev];
@@ -149,12 +143,12 @@ export default function Chat() {
     const payload = { text: newMessage, searchType };
     socketService.emit("chat message", payload);
 
-    setMessages((prev: ChatMessage[]) => [
+    setMessages((prev) => [
       ...prev,
       { sender: "user", text: newMessage, searchType },
     ]);
 
-    setMessages((prev: ChatMessage[]) => [
+    setMessages((prev) => [
       ...prev,
       {
         sender: "assistant",
@@ -217,7 +211,7 @@ export default function Chat() {
             gap: 2,
           }}
         >
-          {messages.map((msg: ChatMessage, index) => {
+          {messages.map((msg, index) => {
             const isFinalAssistant = msg.sender === "assistant" && !msg.loading;
             return (
               <Box
@@ -267,11 +261,12 @@ export default function Chat() {
                         size={16}
                         sx={{ color: "inherit", mb: 1 }}
                       />
-                      <MarkdownRenderer
-                        content={msg.text}
-                        mode={mode}
-                        animate
-                      />
+                      <Typography
+                        variant="body2"
+                        sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
+                      >
+                        <TypewriterText fullText={msg.text} />
+                      </Typography>
                     </>
                   ) : msg.sender === "assistant" ? (
                     <MarkdownRenderer content={msg.text} mode={mode} />
