@@ -1,14 +1,17 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import TypewriterText from "./TypewriterText"; // убедись, что путь верный
 
 interface MarkdownRendererProps {
   content: string;
   mode: "dark" | "light";
+  animate?: boolean;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
   mode,
+  animate = false,
 }) => {
   const commonCodeStyle: React.CSSProperties = {
     fontFamily: "monospace",
@@ -16,10 +19,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     overflowWrap: "break-word",
   };
 
+  if (animate) {
+    return (
+      <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+        <TypewriterText fullText={content} />
+      </div>
+    );
+  }
+
   return (
     <ReactMarkdown
       components={{
-        // Заголовки
         h1: ({ node, ...props }) => (
           <h1 style={{ fontSize: "2em", margin: "0.67em 0" }} {...props} />
         ),
@@ -44,7 +54,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Абзацы
         p: ({ node, ...props }) => (
           <p
             style={{
@@ -55,7 +64,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Списки
         ul: ({ node, ...props }) => (
           <ul
             style={{
@@ -76,7 +84,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Цитаты
         blockquote: ({ node, ...props }) => (
           <blockquote
             style={{
@@ -90,7 +97,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Ссылки
         a: ({ node, ...props }) => (
           <a
             style={{
@@ -102,7 +108,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Изображения
         img: ({ node, ...props }) => (
           <img
             style={{
@@ -114,7 +119,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Таблицы
         table: ({ node, ...props }) => (
           <div style={{ overflowX: "auto", margin: "1em 0" }}>
             <table
@@ -144,7 +148,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {...props}
           />
         ),
-        // Код: блочный и инлайн
         code: ({
           node,
           inline,
@@ -155,7 +158,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           node?: any;
           inline?: boolean;
           className?: string;
-          children?: React.ReactNode; // теперь children опционален
+          children?: React.ReactNode;
           [x: string]: any;
         }) => {
           if (!inline) {

@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
-import ReactMarkdown from "react-markdown";
 import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -268,7 +267,11 @@ export default function Chat() {
                         size={16}
                         sx={{ color: "inherit", mb: 1 }}
                       />
-                      <MarkdownRenderer content={msg.text} mode={mode} />
+                      <MarkdownRenderer
+                        content={msg.text}
+                        mode={mode}
+                        animate
+                      />
                     </>
                   ) : msg.sender === "assistant" ? (
                     <MarkdownRenderer content={msg.text} mode={mode} />
