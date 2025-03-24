@@ -1,12 +1,19 @@
 "use client";
 
 import { useAppSelector } from "@/shared/redux/hooks";
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  keyframes,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { useRouter } from "next/navigation";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -16,8 +23,20 @@ interface ChatMessage {
   id?: string;
 }
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
+  const router = useRouter();
 
   const assistantBg = mode === "dark" ? "#242633" : "#F7F7F7";
   const assistantTextColor = mode === "dark" ? "#f5f5f5" : "#202123";
@@ -237,6 +256,10 @@ export default function Chat() {
                     flexDirection: "column",
                     gap: 1,
                     opacity: msg.loading ? 0.7 : 1,
+                    animation:
+                      msg.sender === "assistant" && !msg.loading
+                        ? `${fadeIn} 0.5s ease-out`
+                        : "none",
                   }}
                 >
                   {msg.loading ? (
