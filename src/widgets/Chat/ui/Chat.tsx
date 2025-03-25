@@ -215,7 +215,7 @@ export default function Chat() {
                         text={msg.text}
                         mode={mode}
                         isStreaming={!!msg.loading}
-                        speed={2}
+                        speed={5}
                       />
                       {msg.searchType && (
                         <Typography variant="caption" sx={{ mt: 0.5 }}>

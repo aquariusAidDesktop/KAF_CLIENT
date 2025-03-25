@@ -1,20 +1,19 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import MarkdownRenderer from "./MarkdownRenderer";
-import type { CSSProperties } from "react";
 
 interface AnimatedMarkdownProps {
   text: string; // Текст (partial или финальный), который будем "печатать"
   mode: "dark" | "light";
   isStreaming?: boolean; // Идёт ли генерация (partial answer)
-  speed?: number; // Интервал (мс/символ)
+  speed?: number; // Интервал (мс/слово)
 }
 
 export default function AnimatedMarkdown({
   text,
   mode,
   isStreaming = false,
-  speed = 30,
+  speed = 100, // Увеличиваем скорость для слов
 }: AnimatedMarkdownProps) {
   const [displayedText, setDisplayedText] = useState("");
   const prevTextRef = useRef(text);
@@ -26,35 +25,25 @@ export default function AnimatedMarkdown({
     }
   }, [isStreaming, text]);
 
-  // Если текст растёт — продолжаем "допечатывать"
+  // Постепенное добавление текста по словам
   useEffect(() => {
-    if (!isStreaming) return; // Если не стримим, ничего не печатаем постепенно
+    if (!isStreaming) return; // Если не стримим, ничего не добавляем постепенно
+    if (displayedText.length >= text.length) return; // Всё уже отображено
 
-    // При изменении текста обновляем ref (без обнуления displayedText)
-    if (text !== prevTextRef.current) {
-      prevTextRef.current = text;
-    }
-
-    if (displayedText.length >= text.length) return; // Всё уже напечатано
+    // Находим позицию следующего пробела
+    const nextSpaceIndex = text.indexOf(" ", displayedText.length);
+    const nextFragmentEnd =
+      nextSpaceIndex !== -1 ? nextSpaceIndex + 1 : text.length;
 
     const timer = setTimeout(() => {
-      setDisplayedText(text.slice(0, displayedText.length + 1));
+      setDisplayedText(text.slice(0, nextFragmentEnd));
     }, speed);
 
     return () => clearTimeout(timer);
   }, [text, isStreaming, displayedText, speed]);
 
-  // Для проигрывания CSS-анимации "fadeIn" при добавлении нового символа
-  const wrapperKey = displayedText;
-
   return (
-    <div
-      key={wrapperKey}
-      style={{
-        animation: "fadeIn 0.15s ease-in",
-        MozAnimation: "fadeIn 0.15s ease-in",
-      }}
-    >
+    <div>
       <MarkdownRenderer content={displayedText} mode={mode} />
     </div>
   );
