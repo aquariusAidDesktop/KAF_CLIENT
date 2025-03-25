@@ -1,19 +1,11 @@
 "use client";
 
 import { useAppSelector } from "@/shared/redux/hooks";
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  keyframes,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
-import MarkdownRenderer from "./MarkdownRenderer";
-import { useRouter } from "next/navigation";
-import TypewriterText from "./TypewriterText"; // 👈 добавлено
+import AnimatedMarkdown from "./AnimatedMarkdown";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -23,25 +15,14 @@ interface ChatMessage {
   id?: string;
 }
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
-  const router = useRouter();
+
+  const userTextColor = mode === "dark" ? "#F7F7F7" : "#202123";
+  const assistantTextColor = mode === "dark" ? "#F7F7F7" : "#202123";
 
   const assistantBg = mode === "dark" ? "#242633" : "#F7F7F7";
-  const assistantTextColor = mode === "dark" ? "#f5f5f5" : "#202123";
-  const userBg = mode === "dark" ? "#444654" : "#E5E5EA";
-  const userTextColor = mode === "dark" ? "#e8f1ff" : "#202123";
+  const userBg = mode === "dark" ? "#444654" : "#F7F7F7";
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     { sender: "assistant", text: "Чем помочь сегодня?" },
@@ -64,26 +45,18 @@ export default function Chat() {
     }
   }, [messages]);
 
-  const speakText = (text: string) => {
-    if ("speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "ru-RU";
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   useEffect(() => {
     const socket = socketService.connect(
       process.env.NEXT_PUBLIC_SOCKET_API_URL!
     );
 
     socket.on("connect", () => {
-      console.log(`Подключился к сокету: ${socketService.on.name}`);
+      console.log("Подключились к сокету");
       setSocketConnected(true);
     });
 
     socket.on("disconnect", () => {
-      console.log(`Отключился от сокета: ${socketService.on.name}`);
+      console.log("Отключились от сокета");
       setSocketConnected(false);
     });
 
@@ -94,13 +67,11 @@ export default function Chat() {
 
         if (typeof msg === "string") {
           setMessages((prev) => [...prev, { sender: "assistant", text: msg }]);
-          speakText(msg);
-        } else if (typeof msg === "object" && msg.text) {
+        } else if (msg.text) {
           setMessages((prev) => [
             ...prev,
             { sender: "assistant", text: msg.text, searchType: msg.searchType },
           ]);
-          speakText(msg.text);
         }
         setIsLoadingSearch(false);
       }
@@ -111,7 +82,10 @@ export default function Chat() {
         const loadingIndex = prev.findIndex((m) => m.id === "loading");
         if (loadingIndex !== -1) {
           const updated = [...prev];
-          updated[loadingIndex] = { ...updated[loadingIndex], text: data.text };
+          updated[loadingIndex] = {
+            ...updated[loadingIndex],
+            text: data.text,
+          };
           return updated;
         } else {
           return [
@@ -152,7 +126,7 @@ export default function Chat() {
       ...prev,
       {
         sender: "assistant",
-        text: "Вычисляем пространство векторов…",
+        text: "Генерирую ответ...",
         loading: true,
         id: "loading",
       },
@@ -212,75 +186,61 @@ export default function Chat() {
           }}
         >
           {messages.map((msg, index) => {
-            const isFinalAssistant = msg.sender === "assistant" && !msg.loading;
+            const isAssistant = msg.sender === "assistant";
             return (
               <Box
                 key={index}
                 sx={{
                   display: "flex",
-                  justifyContent:
-                    msg.sender === "user" ? "flex-end" : "flex-start",
+                  justifyContent: isAssistant ? "flex-start" : "flex-end",
                 }}
               >
                 <Box
                   sx={{
-                    backgroundColor:
-                      msg.sender === "user"
-                        ? userBg
-                        : msg.loading
-                        ? "#b0bec5"
-                        : assistantBg,
-                    color:
-                      msg.sender === "user"
-                        ? userTextColor
-                        : msg.loading
-                        ? "#000000"
-                        : assistantTextColor,
+                    backgroundColor: isAssistant
+                      ? msg.loading
+                        ? assistantBg
+                        : assistantBg
+                      : userBg,
+                    color: isAssistant
+                      ? msg.loading
+                        ? assistantTextColor
+                        : assistantTextColor
+                      : userTextColor,
                     p: 2,
-                    borderRadius:
-                      msg.sender === "assistant"
-                        ? isFinalAssistant
-                          ? 1
-                          : 2
-                        : 2,
+                    borderRadius: 2,
                     boxShadow: msg.loading ? 1 : "none",
                     maxWidth: "80%",
                     display: "flex",
                     flexDirection: "column",
                     gap: 1,
-                    opacity: msg.loading ? 0.7 : 1,
-                    animation:
-                      msg.sender === "assistant" && !msg.loading
-                        ? `${fadeIn} 0.5s ease-out`
-                        : "none",
+                    opacity: 1,
                   }}
                 >
-                  {msg.loading ? (
+                  {isAssistant ? (
                     <>
-                      <CircularProgress
-                        size={16}
-                        sx={{ color: "inherit", mb: 1 }}
+                      {msg.loading && (
+                        <CircularProgress
+                          size={20}
+                          color="primary"
+                          sx={{ color: "inherit", mb: 1 }}
+                        />
+                      )}
+                      <AnimatedMarkdown
+                        text={msg.text}
+                        mode={mode}
+                        isStreaming={!!msg.loading}
+                        speed={7}
                       />
-                      <Typography
-                        variant="body2"
-                        sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
-                      >
-                        <TypewriterText fullText={msg.text} />
-                      </Typography>
+                      {msg.searchType && (
+                        <Typography variant="caption" sx={{ mt: 0.5 }}>
+                          Тип поиска: {msg.searchType}
+                        </Typography>
+                      )}
                     </>
-                  ) : msg.sender === "assistant" ? (
-                    <MarkdownRenderer content={msg.text} mode={mode} />
                   ) : (
-                    <Typography variant="body2">{msg.text}</Typography>
-                  )}
-
-                  {msg.searchType && (
-                    <Typography
-                      variant="caption"
-                      display="block"
-                      sx={{ mt: 0.5 }}
-                    >
-                      Тип поиска: {msg.searchType}
+                    <Typography variant="body2" sx={{ fontSize: "1.05em" }}>
+                      {msg.text}
                     </Typography>
                   )}
                 </Box>
