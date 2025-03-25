@@ -2,36 +2,25 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import type { CSSProperties } from "react";
+import { useTheme } from "@mui/material/styles";
 
 interface MarkdownRendererProps {
   content: string;
   mode: "dark" | "light";
 }
 
-const getColors = (mode: "dark" | "light") => {
-  if (mode === "dark") {
-    return {
-      text: "#F7F7F7",
-      link: "#F7F7F7",
-      blockquoteBg: "##333",
-      codeBg: "#333",
-      tableHeaderBg: "#333",
-    };
-  }
-  return {
-    text: "#333",
-    link: "#333",
-    blockquoteBg: "#e6e6e6",
-    codeBg: "#4d4d4d",
-    tableHeaderBg: "#b3b3b3",
-  };
-};
-
 export default function MarkdownRenderer({
   content,
   mode,
 }: MarkdownRendererProps) {
-  const colors = getColors(mode);
+  const theme = useTheme();
+  const colors = {
+    text: theme.palette.text.primary,
+    link: theme.palette.text.primary,
+    blockquoteBg: theme.customColors.blockquoteBg,
+    codeBg: theme.customColors.codeBg,
+    tableHeaderBg: theme.customColors.tableHeaderBg,
+  };
 
   const commonCodeStyle: CSSProperties = {
     fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
@@ -111,7 +100,11 @@ export default function MarkdownRenderer({
         ),
         p: ({ ...props }) => (
           <p
-            style={{ margin: "0.25em 0", lineHeight: 1.6, color: colors.text }}
+            style={{
+              margin: "0.25em 0",
+              lineHeight: 1.6,
+              color: colors.text,
+            }}
             {...props}
           />
         ),
@@ -246,8 +239,7 @@ export default function MarkdownRenderer({
           <hr
             style={{
               border: "none",
-              borderBottom:
-                mode === "dark" ? "1px solid #e6e6e6" : "1px solid #ccc",
+              borderBottom: `1px solid ${theme.palette.divider}`,
               margin: "1.2em 0",
             }}
             {...props}

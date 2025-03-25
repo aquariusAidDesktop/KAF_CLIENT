@@ -13,6 +13,7 @@ import { IoMdMicOff, IoMdMic } from "react-icons/io";
 import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/redux/store";
+import { useTheme } from "@mui/material/styles";
 
 interface ControlPanelProps {
   newMessage: string;
@@ -42,6 +43,7 @@ export default function ControlPanel({
   mode,
 }: ControlPanelProps) {
   const [listening, setListening] = useState<boolean>(false);
+  const theme = useTheme();
 
   const isVoiceInputEnabled = useSelector(
     (state: RootState) => state.voice.isVoiceInputEnabled
@@ -74,7 +76,7 @@ export default function ControlPanel({
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: "background",
+          backgroundColor: theme.palette.background.default,
           p: 3,
         }}
       >
@@ -100,8 +102,7 @@ export default function ControlPanel({
               px: 2,
               py: 1,
               transition: "all 150ms ease-in-out",
-              backgroundColor:
-                mode === "dark" ? "#303030" : "background.default",
+              backgroundColor: theme.customColors.controlPanelBackground,
             }}
           >
             <TextField
@@ -120,7 +121,7 @@ export default function ControlPanel({
                   px: 0,
                   py: 0,
                   fontSize: "1.1rem",
-                  color: mode === "dark" ? "#D1D5DB" : "#202123",
+                  color: theme.palette.text.primary,
                 },
               }}
             />

@@ -6,6 +6,29 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { toggleTheme } from "@/shared/redux/slices/themeSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/redux/hooks";
 
+declare module "@mui/material/styles" {
+  interface Theme {
+    customColors: {
+      blockquoteBg: string;
+      codeBg: string;
+      tableHeaderBg: string;
+      assistantBackground: string;
+      userBackground: string;
+      controlPanelBackground: string;
+    };
+  }
+  interface ThemeOptions {
+    customColors?: {
+      blockquoteBg?: string;
+      codeBg?: string;
+      tableHeaderBg?: string;
+      assistantBackground?: string;
+      userBackground?: string;
+      controlPanelBackground?: string;
+    };
+  }
+}
+
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => {},
 });
@@ -24,6 +47,24 @@ export default function ToggleColorMode({
     }),
     [dispatch]
   );
+
+  const darkCustomColors = {
+    blockquoteBg: "#333",
+    codeBg: "#333",
+    tableHeaderBg: "#333",
+    assistantBackground: "#242633",
+    userBackground: "#444654",
+    controlPanelBackground: "#303030",
+  };
+
+  const lightCustomColors = {
+    blockquoteBg: "#e6e6e6",
+    codeBg: "#4d4d4d",
+    tableHeaderBg: "#b3b3b3",
+    assistantBackground: "#F7F7F7",
+    userBackground: "#F7F7F7",
+    controlPanelBackground: "#FFFFFF",
+  };
 
   const theme = React.useMemo(
     () =>
@@ -65,6 +106,7 @@ export default function ToggleColorMode({
             main: "#58A6FF",
           },
         },
+        customColors: mode === "dark" ? darkCustomColors : lightCustomColors,
       }),
     [mode]
   );

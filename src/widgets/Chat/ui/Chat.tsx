@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import ControlPanel from "./ControlPanel";
 import { socketService } from "@/shared/socket/socketService";
 import AnimatedMarkdown from "./AnimatedMarkdown";
+import { useTheme } from "@mui/material/styles";
 
 interface ChatMessage {
   sender: "assistant" | "user";
@@ -17,12 +18,12 @@ interface ChatMessage {
 
 export default function Chat() {
   const mode = useAppSelector((state) => state.theme.mode);
+  const theme = useTheme();
 
-  const userTextColor = mode === "dark" ? "#F7F7F7" : "#202123";
-  const assistantTextColor = mode === "dark" ? "#F7F7F7" : "#202123";
-
-  const assistantBg = mode === "dark" ? "#242633" : "#F7F7F7";
-  const userBg = mode === "dark" ? "#444654" : "#F7F7F7";
+  const userTextColor = theme.palette.text.primary;
+  const assistantTextColor = theme.palette.text.primary;
+  const assistantBg = theme.customColors.assistantBackground;
+  const userBg = theme.customColors.userBackground;
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     { sender: "assistant", text: "Чем помочь сегодня?" },
@@ -63,6 +64,7 @@ export default function Chat() {
     socket.on(
       "chat message",
       (msg: string | { text: string; searchType?: string }) => {
+        // Удаляем предыдущее сообщение с индикатором загрузки
         setMessages((prev) => prev.filter((m) => m.id !== "loading"));
 
         if (typeof msg === "string") {
@@ -111,7 +113,6 @@ export default function Chat() {
       console.log("Нет подключения к сокету");
       return;
     }
-
     if (newMessage.trim() === "" || isLoadingSearch) return;
 
     const payload = { text: newMessage, searchType };
@@ -120,10 +121,6 @@ export default function Chat() {
     setMessages((prev) => [
       ...prev,
       { sender: "user", text: newMessage, searchType },
-    ]);
-
-    setMessages((prev) => [
-      ...prev,
       {
         sender: "assistant",
         text: "Генерирую ответ...",
@@ -164,12 +161,8 @@ export default function Chat() {
           pt: { xs: 2, sm: 4 },
           px: { xs: 2, sm: 4 },
           pb: 16,
-          "&::-webkit-scrollbar": {
-            width: "8px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
+          "&::-webkit-scrollbar": { width: "8px" },
+          "&::-webkit-scrollbar-track": { background: "transparent" },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "rgba(0,0,0,0.2)",
             borderRadius: "4px",
@@ -197,16 +190,8 @@ export default function Chat() {
               >
                 <Box
                   sx={{
-                    backgroundColor: isAssistant
-                      ? msg.loading
-                        ? assistantBg
-                        : assistantBg
-                      : userBg,
-                    color: isAssistant
-                      ? msg.loading
-                        ? assistantTextColor
-                        : assistantTextColor
-                      : userTextColor,
+                    backgroundColor: isAssistant ? assistantBg : userBg,
+                    color: isAssistant ? assistantTextColor : userTextColor,
                     p: 2,
                     borderRadius: 2,
                     boxShadow: msg.loading ? 1 : "none",
