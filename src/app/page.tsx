@@ -6,9 +6,32 @@ import { useRouter } from "next/navigation";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FiUpload, FiSearch } from "react-icons/fi";
 import { GoHistory } from "react-icons/go";
+import "./global.css";
 
 export default function Home() {
   const router = useRouter();
+
+  const features = [
+    {
+      icon: <FiUpload color="#2563EB" size={30} />,
+      title: "Легкая загрузка",
+      description: "Поддержка PDF с возможностями предпросмотра",
+      route: "/upload",
+    },
+    {
+      icon: <FiSearch color="#2563EB" size={30} />,
+      title: "Умный поиск",
+      description:
+        "Выбирайте между семантичиским, гибридным и поиском по ключевым словам",
+      route: "/search",
+    },
+    {
+      icon: <GoHistory color="#2563EB" size={30} />,
+      title: "История чатов",
+      description: "Отслеживайте и возвращайтесь к предыдущим запросам",
+      route: "/history",
+    },
+  ];
 
   return (
     <ProtectedRoute>
@@ -37,7 +60,13 @@ export default function Home() {
 
         <Button
           variant="contained"
-          sx={{ mt: "7vh" }}
+          sx={{
+            mt: "7vh",
+            transition: "background-color 0.3s ease",
+            "&:hover": {
+              backgroundColor: "#2ecc71",
+            },
+          }}
           onClick={() => router.push("/upload")}
         >
           <Typography p={1}>Загрузить книги</Typography>
@@ -53,66 +82,35 @@ export default function Home() {
             justifyContent: "center",
           }}
         >
-          <Box
-            sx={{
-              backgroundColor: "background.paper",
-              p: 3,
-              borderRadius: "20px",
-              cursor: "pointer",
-              minWidth: "22%",
-              maxWidth: "22%",
-            }}
-            onClick={() => router.push("/upload")}
-          >
-            <FiUpload color="#2563EB" size={30} />
-            <Typography mt={3} variant="h5">
-              Легкая загрузка
-            </Typography>
-            <Typography variant="body2" sx={{ width: "100%", mt: 2 }}>
-              Поддержка PDF с возможностями предпросмотра
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              backgroundColor: "background.paper",
-              borderRadius: "20px",
-              cursor: "pointer",
-              p: 3,
-              minWidth: "22%",
-              maxWidth: "22%",
-            }}
-            onClick={() => router.push("/search")}
-          >
-            <FiSearch color="#2563EB" size={30} />
-            <Typography mt={3} variant="h5">
-              Умный поиск
-            </Typography>
-            <Typography variant="body2" sx={{ width: "100%", mt: 2 }}>
-              Выбирайте между семантичиским, гибридным и поиском по ключевым
-              словам
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              backgroundColor: "background.paper",
-              p: 3,
-              borderRadius: "20px",
-              cursor: "pointer",
-              minWidth: "22%",
-              maxWidth: "22%",
-            }}
-            onClick={() => router.push("/history")}
-          >
-            <GoHistory color="#2563EB" size={30} />
-            <Typography mt={3} variant="h5">
-              История чатов
-            </Typography>
-            <Typography variant="body2" sx={{ width: "100%", mt: 2 }}>
-              Отслеживайте и возвращайтесь к предыдущим запросам
-            </Typography>
-          </Box>
+          {features.map((feature, index) => (
+            <Box
+              key={feature.title}
+              onClick={() => router.push(feature.route)}
+              sx={{
+                backgroundColor: "background.paper",
+                p: 3,
+                borderRadius: "20px",
+                cursor: "pointer",
+                minWidth: "22%",
+                maxWidth: "22%",
+                opacity: 0,
+                transform: "translateY(40px) scale(0.9)",
+                animationName: "fadeInUp",
+                animationDuration: "0.6s",
+                animationTimingFunction: "ease-out",
+                animationFillMode: "forwards",
+                animationDelay: `${index * 0.4}s`,
+              }}
+            >
+              {feature.icon}
+              <Typography mt={3} variant="h5">
+                {feature.title}
+              </Typography>
+              <Typography variant="body2" sx={{ width: "100%", mt: 2 }}>
+                {feature.description}
+              </Typography>
+            </Box>
+          ))}
         </Grid2>
       </Grid2>
     </ProtectedRoute>
