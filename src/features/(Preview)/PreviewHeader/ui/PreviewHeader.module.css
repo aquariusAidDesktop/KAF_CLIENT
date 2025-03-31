@@ -1,0 +1,71 @@
+.headerContainer {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 10rem;
+  height: 7rem;
+}
+
+.sloganContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.sloganItem {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-style: italic;
+  opacity: 0.57;
+  color: white;
+}
+
+.ulContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 14rem;
+}
+
+.liContainer {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.liContainer:not(:last-child) {
+  margin-right: 2rem;
+}
+
+.itemLink {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+}
+
+.languageContainer {
+  position: absolute;
+  right: 5rem;
+}
+
+.languageButton {
+  background-color: inherit;
+  border: 1px solid #777777;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  border-radius: 3px;
+  padding: 7px 7px;
+  color: white;
+  cursor: pointer;
+}

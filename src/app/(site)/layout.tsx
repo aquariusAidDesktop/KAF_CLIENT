@@ -1,5 +1,5 @@
 import Providers from "@/shared/providers/providers";
-import ToggleColorMode from "../shared/themeContext/ThemeContext";
+import ToggleColorMode from "../../shared/themeContext/ThemeContext";
 import { Box, Grid2 } from "@mui/material";
 import AbilitySide from "@/widgets/AbilitySide/ui/AbilitySide";
 import "normalize.css/normalize.css";
@@ -7,7 +7,7 @@ import "./global.css";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "бот",
+  title: "МАФ | ИИ Агент",
 };
 
 export default function RootLayout({
