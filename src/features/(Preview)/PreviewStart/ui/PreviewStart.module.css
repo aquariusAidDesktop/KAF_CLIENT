@@ -16,7 +16,59 @@
   margin-left: 3rem;
 }
 
-.h1Item {
+@-webkit-keyframes typing {
+  0% {
+    width: 0em;
+  }
+  20% {
+    width: 0.9em;
+  }
+  40% {
+    width: 1.63em;
+  }
+  60% {
+    width: 2.4em;
+  }
+  80% {
+    width: 2.7em;
+  }
+  100% {
+    width: 2.9em;
+  }
+}
+@keyframes typing {
+  0% {
+    width: 0em;
+  }
+  20% {
+    width: 0.9em;
+  }
+  40% {
+    width: 1.63em;
+  }
+  60% {
+    width: 2.4em;
+  }
+  80% {
+    width: 2.7em;
+  }
+  100% {
+    width: 2.9em;
+  }
+}
+
+@-webkit-keyframes blink-caret {
+  50% {
+    border-color: transparent;
+  }
+}
+@keyframes blink-caret {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.typedText {
   margin-top: 8rem;
   margin-bottom: 0;
   font-family: "Segoe UI", sans-serif;
@@ -24,52 +76,17 @@
   font-size: 19em;
   letter-spacing: -0.02em;
   color: white;
+
   white-space: nowrap;
-  /* чтобы не переносилось слово */
   overflow: hidden;
-}
+  width: 0;
 
-/* Класс для каждой буквы */
-.letter {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(20px);
-  /* 6s – это общее время цикла, можно менять под себя */
-  animation: typeIn 6s infinite;
-  animation-fill-mode: both;
-  /* чтобы сохранять финальное состояние между циклами */
-}
+  border-right: 0.04em solid white;
 
-/* Буквы с особым цветом */
-.coloredPart {
-  color: #00e0c2;
-}
-
-/* Ключевые кадры:
-   - первые 30% времени анимации уходит на "появление" (type-in),
-   - с 30% по 70% буква «остается»,
-   - с 70% до 100% исчезает (чтобы потом снова начался цикл).
-*/
-@keyframes typeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  30% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  70% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+  -webkit-animation: typing 5s step-end infinite alternate,
+    blink-caret 0.5s step-end infinite alternate;
+  animation: typing 5s step-end infinite alternate,
+    blink-caret 0.5s step-end infinite alternate;
 }
 
 .descriptionContainer {

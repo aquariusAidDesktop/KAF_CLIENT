@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./PreviewHeader.module.css";
+import Link from "next/link";
 
 const PreviewHeader = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -14,22 +15,30 @@ const PreviewHeader = ({ children }: { children: React.ReactNode }) => {
             className={styles.logo}
           />
           <div className={styles.sloganContainer}>
-            <p className={styles.sloganItem}>Поколения . Технологии.</p>
-            <p className={styles.sloganItem}>Окружение. Хайп.</p>
+            <p className={styles.sloganItem}>Поколения. Технологии.</p>
+            <p className={styles.sloganItem}>Окружение.</p>
           </div>
         </div>
         <ul className={styles.ulContainer}>
           <li className={styles.liContainer}>
-            <p className={styles.itemLink}>Преимущества</p>
+            <Link href={"/"} className={styles.itemLink}>
+              Преимущества
+            </Link>
           </li>
           <li className={styles.liContainer}>
-            <p className={styles.itemLink}>Консепт</p>
+            <Link href={"/"} className={styles.itemLink}>
+              Консепт
+            </Link>
           </li>
           <li className={styles.liContainer}>
-            <p className={styles.itemLink}>Команда</p>
+            <Link href={"/"} className={styles.itemLink}>
+              Команда
+            </Link>
           </li>
           <li className={styles.liContainer}>
-            <p className={styles.itemLink}>Чат</p>
+            <Link href={"/search"} className={styles.itemLink}>
+              Чат
+            </Link>
           </li>
         </ul>
         <div className={styles.languageContainer}>

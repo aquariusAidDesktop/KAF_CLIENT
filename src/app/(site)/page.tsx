@@ -46,7 +46,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h3" pt="3vh" component="h1">
-          Интелектуальный текстовый агент
+          Интелектуальный текстовый агент - МАФ
         </Typography>
         <Typography
           pt="4vh"

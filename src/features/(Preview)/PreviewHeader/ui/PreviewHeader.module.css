@@ -51,6 +51,7 @@
 
 .itemLink {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-decoration: none;
   color: white;
 }
 
