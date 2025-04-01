@@ -1,10 +1,125 @@
 .startContainer {
   width: 100vw;
   height: 100svh;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   background-image: url("/mask-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.headerContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: 3rem;
+}
+
+.h1Item {
+  margin-top: 8rem;
+  margin-bottom: 0;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: bold;
+  font-size: 19em;
+  letter-spacing: -0.02em;
+  color: white;
+  white-space: nowrap;
+  /* чтобы не переносилось слово */
+  overflow: hidden;
+}
+
+/* Класс для каждой буквы */
+.letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  /* 6s – это общее время цикла, можно менять под себя */
+  animation: typeIn 6s infinite;
+  animation-fill-mode: both;
+  /* чтобы сохранять финальное состояние между циклами */
+}
+
+/* Буквы с особым цветом */
+.coloredPart {
+  color: #00e0c2;
+}
+
+/* Ключевые кадры:
+   - первые 30% времени анимации уходит на "появление" (type-in),
+   - с 30% по 70% буква «остается»,
+   - с 70% до 100% исчезает (чтобы потом снова начался цикл).
+*/
+@keyframes typeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.descriptionContainer {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+}
+
+.descriptionItem {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 100;
+  font-size: 32px;
+  font-style: italic;
+  color: #ffffff;
+  opacity: 0.76;
+}
+
+.buttonContainer {
+  margin-top: 4rem;
+  margin-left: 4rem;
+  display: flex;
+}
+
+.buttonChat,
+.buttonMore {
+  all: unset;
+  padding: 16px 24px;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease;
+}
+
+.buttonChat {
+  background-image: url("/chat-lay.svg");
+  color: black;
+}
+
+.buttonMore {
+  background-image: url("/more-lay.svg");
+  color: #ffffff;
+}
+
+.buttonChat:hover,
+.buttonMore:hover {
+  transform: scale(1.03);
 }
