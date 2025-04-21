@@ -49,8 +49,8 @@ export default function ToggleColorMode({
   );
 
   const darkCustomColors = {
-    blockquoteBg: "#333",
-    codeBg: "#333",
+    blockquoteBg: "#0DE6BE",
+    codeBg: "#0DE6BE",
     tableHeaderBg: "#333",
     assistantBackground: "#242633",
     userBackground: "#444654",
@@ -81,12 +81,12 @@ export default function ToggleColorMode({
             disabled: "#484F58",
           },
           primary: {
-            main: "#2563EB",
+            main: "#0DE6BE",
             light: "#3B82F6",
-            dark: "#1E40AF",
+            dark: "#0DE6BE",
           },
           secondary: {
-            main: "#1F6FEB",
+            main: "#0DE6BE",
             light: "#58A6FF",
             dark: "#1C4F9B",
           },

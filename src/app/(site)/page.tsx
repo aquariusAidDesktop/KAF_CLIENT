@@ -13,20 +13,20 @@ export default function Home() {
 
   const features = [
     {
-      icon: <FiUpload color="#2563EB" size={30} />,
+      icon: <FiUpload color="#0DE6BE" size={30} />,
       title: "Легкая загрузка",
       description: "Поддержка PDF с возможностями предпросмотра",
       route: "/upload",
     },
     {
-      icon: <FiSearch color="#2563EB" size={30} />,
+      icon: <FiSearch color="#0DE6BE" size={30} />,
       title: "Умный поиск",
       description:
         "Выбирайте между семантичиским, гибридным и поиском по ключевым словам",
       route: "/search",
     },
     {
-      icon: <GoHistory color="#2563EB" size={30} />,
+      icon: <GoHistory color="#0DE6BE" size={30} />,
       title: "История чатов",
       description: "Отслеживайте и возвращайтесь к предыдущим запросам",
       route: "/history",
@@ -64,7 +64,7 @@ export default function Home() {
             mt: "7vh",
             transition: "background-color 0.3s ease",
             "&:hover": {
-              backgroundColor: "#2ecc71",
+              backgroundColor: "#0DE6BE",
             },
           }}
           onClick={() => router.push("/upload")}

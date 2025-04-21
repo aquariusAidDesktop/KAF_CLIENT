@@ -40,7 +40,7 @@ export default function AbilitySide() {
                 <Icon
                   style={{
                     fontSize: active ? "1.7rem" : "1.7rem",
-                    color: active ? "tomato" : "inherit",
+                    color: active ? "tomato" : "#0DE6BE",
                   }}
                   title={route.label}
                 />
