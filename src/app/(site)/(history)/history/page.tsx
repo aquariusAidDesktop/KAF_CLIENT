@@ -1,4 +1,4 @@
-import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "@/features/ProtectedRoute";
 import { Typography } from "@mui/material";
 
 export default function Home() {

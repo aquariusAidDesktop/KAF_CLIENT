@@ -8,12 +8,17 @@ import {
   MenuItem,
   Select,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { IoMdMicOff, IoMdMic } from "react-icons/io";
 import OfflineVoiceInput from "@/widgets/VoiceInput/model/OfflineVoiceInput";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/redux/store";
 import { useTheme } from "@mui/material/styles";
+import { socketService } from "@/shared/socket/socketService";
 
 interface ControlPanelProps {
   newMessage: string;
@@ -43,6 +48,8 @@ export default function ControlPanel({
   mode,
 }: ControlPanelProps) {
   const [listening, setListening] = useState<boolean>(false);
+  const [deviceError, setDeviceError] = useState<boolean>(false);
+  const [socketError, setSocketError] = useState<boolean>(false);
   const theme = useTheme();
 
   const isVoiceInputEnabled = useSelector(
@@ -55,6 +62,30 @@ export default function ControlPanel({
     } catch (err) {
       console.error("Ошибка обновления newMessage:", err);
     }
+  };
+
+  const handleVoiceToggle = () => {
+    setIsLoadingVoice(true);
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(() => {
+        setListening((prev) => !prev);
+        setIsLoadingVoice(false);
+      })
+      .catch((error) => {
+        console.error("Error: Requested device not found", error);
+        setDeviceError(true);
+        setIsLoadingVoice(false);
+      });
+  };
+
+  const handleSendMessage = () => {
+    if (!socketService.isConnected()) {
+      setSocketError(true);
+      return;
+    }
+    setIsLoadingSearch(true);
+    sendMessage();
   };
 
   return (
@@ -89,7 +120,6 @@ export default function ControlPanel({
             gap: 1,
           }}
         >
-          {/* Текстовое поле */}
           <Box
             id="composer-background"
             sx={{
@@ -168,7 +198,7 @@ export default function ControlPanel({
 
               {isVoiceInputEnabled && (
                 <Button
-                  onClick={() => setListening((prev) => !prev)}
+                  onClick={handleVoiceToggle}
                   variant={listening ? "outlined" : "contained"}
                   color={listening ? "error" : "primary"}
                 >
@@ -184,7 +214,7 @@ export default function ControlPanel({
             </Box>
 
             <Button
-              onClick={sendMessage}
+              onClick={handleSendMessage}
               disabled={newMessage.trim() === "" || isLoadingSearch}
               variant="contained"
               size="medium"
@@ -198,6 +228,26 @@ export default function ControlPanel({
           </Box>
         </Box>
       </Box>
+
+      <Dialog open={deviceError} onClose={() => setDeviceError(false)}>
+        <DialogTitle>Ошибка</DialogTitle>
+        <DialogContent>
+          Устройство не найдено. Пожалуйста, подключите микрофон.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeviceError(false)}>Закрыть</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={socketError} onClose={() => setSocketError(false)}>
+        <DialogTitle>Ошибка подключения</DialogTitle>
+        <DialogContent>
+          Нет подключения к серверу. Пожалуйста, проверьте соединение.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSocketError(false)}>Закрыть</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

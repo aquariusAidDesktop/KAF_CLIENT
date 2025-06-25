@@ -1,4 +1,4 @@
-import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "@/features/ProtectedRoute";
 import ProfilePage from "@/widgets/ProfilePage/ui/ProfilePage";
 
 export default function Home() {

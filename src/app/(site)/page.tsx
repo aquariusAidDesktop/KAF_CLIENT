@@ -1,12 +1,12 @@
 "use client";
 
-import ProtectedRoute from "@/features/ProtectedRoute/ProtectedRoute";
 import { Box, Button, Grid2, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FiUpload, FiSearch } from "react-icons/fi";
 import { GoHistory } from "react-icons/go";
 import "./global.css";
+import ProtectedRoute from "@/features/ProtectedRoute/ui/ProtectedRoute";
 
 export default function Home() {
   const router = useRouter();
@@ -43,38 +43,82 @@ export default function Home() {
         sx={{
           backgroundColor: "background",
           p: 2,
+          minHeight: "100vh",
+          overflow: "hidden",
         }}
       >
-        <Typography variant="h3" pt="3vh" component="h1">
-          Интелектуальный текстовый агент - МАФ
-        </Typography>
-        <Typography
-          pt="4vh"
-          component="h2"
-          sx={{ maxWidth: "70vw", textAlign: "center", fontSize: "1.2rem" }}
-        >
-          Загрузите книги и разблокируйте новые возможности с вашим ИИ агентом.
-          Быстрый поиск, понимание смысла и контекста диалога. Используйте
-          проверенную информацию из достоверных источников.
-        </Typography>
-
-        <Button
-          variant="contained"
+        <Box
           sx={{
-            mt: "7vh",
-            transition: "background-color 0.3s ease",
-            "&:hover": {
-              backgroundColor: "#0DE6BE",
-            },
+            mt: 4,
+            px: 1.5,
+            py: 1.2,
+            borderRadius: 2,
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? `linear-gradient(135deg, #0DE6BE22 0%, #161B22 100%)`
+                : `linear-gradient(135deg, #e0f7f4 0%, #fff 100%)`,
+            boxShadow: 2,
+            maxWidth: "900px",
+            width: "100%",
+            textAlign: "center",
+            userSelect: "none",
           }}
-          onClick={() => router.push("/upload")}
         >
-          <Typography p={1}>Загрузить книги</Typography>
-          <FaArrowRightLong />
-        </Button>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 600,
+              letterSpacing: "0.04em",
+              color: (theme) =>
+                theme.palette.mode === "dark" ? "#0DE6BE" : "#00bfae",
+              fontFamily: "Montserrat, Arial, sans-serif",
+              mb: 1,
+              textShadow: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "0 2px 12px #0DE6BE44"
+                  : "0 2px 8px #00bfae22",
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            Интелектуальный текстовый агент — МАФ
+          </Typography>
+          <Typography
+            variant="body1"
+            component="h2"
+            sx={{
+              color: (theme) =>
+                theme.palette.mode === "dark" ? "#C9D1D9" : "#222",
+              fontFamily: "Nunito, Arial, sans-serif",
+              fontWeight: 300,
+              lineHeight: 1.4,
+              fontSize: { xs: "0.98rem", sm: "1.08rem", md: "1.15rem" },
+              background: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "rgba(22,27,34,0.7)"
+                  : "rgba(255,255,255,0.85)",
+              borderRadius: 1.5,
+              px: 1.5,
+              py: 0.7,
+              display: "inline-block",
+              boxShadow: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "0 2px 8px 0 #0DE6BE22"
+                  : "0 2px 8px 0 #00bfae22",
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            Загрузите книги и разблокируйте новые возможности с вашим ИИ агентом.
+            <br />
+            Быстрый поиск, понимание смысла и контекста диалога. <br />
+            Используйте проверенную информацию из достоверных источников.
+          </Typography>
+        </Box>
 
         <Grid2
-          mt={10}
+          mt={9}
           gap={9}
           sx={{
             width: "85vw",
@@ -100,6 +144,12 @@ export default function Home() {
                 animationTimingFunction: "ease-out",
                 animationFillMode: "forwards",
                 animationDelay: `${index * 0.4}s`,
+                transition:
+                  "box-shadow 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1)",
+                "&:hover": {
+                  boxShadow: 8,
+                  transform: "translateY(-8px) scale(1.03)",
+                },
               }}
             >
               {feature.icon}
@@ -112,6 +162,21 @@ export default function Home() {
             </Box>
           ))}
         </Grid2>
+
+        <Button
+          variant="contained"
+          sx={{
+            mt: "10vh",
+            transition: "background-color 0.3s ease",
+            "&:hover": {
+              backgroundColor: "#0DE6BE",
+            },
+          }}
+          onClick={() => router.push("/upload")}
+        >
+          <Typography p={1}>Загрузить книги</Typography>
+          <FaArrowRightLong />
+        </Button>
       </Grid2>
     </ProtectedRoute>
   );

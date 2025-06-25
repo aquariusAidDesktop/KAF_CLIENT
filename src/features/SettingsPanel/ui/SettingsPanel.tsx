@@ -56,15 +56,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
   const isVoiceInputEnabled = useSelector(
     (state: RootState) => state.voice.isVoiceInputEnabled
   );
-
-  const [themeMode, setThemeMode] = useState("dark");
+  const themeModeRedux = useSelector((state: RootState) => state.theme.mode);
+  const [themeMode, setThemeMode] = useState(themeModeRedux);
   const [language, setLanguage] = useState("ru");
 
   const [selected, setSelected] = useState("Общее");
 
-  useEffect(() => {
-    toggleColorMode();
-  }, [themeMode, toggleColorMode]);
+  const handleThemeChange = (e: any) => {
+    const newMode = e.target.value;
+    setThemeMode(newMode);
+    if (newMode !== themeModeRedux) {
+      toggleColorMode();
+    }
+  };
 
   const renderGeneralSettings = () => (
     <>
@@ -90,7 +94,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
         <Typography>Тема</Typography>
         <Select
           value={themeMode}
-          onChange={(e) => setThemeMode(e.target.value)}
+          onChange={handleThemeChange}
           size="small"
           sx={{
             minWidth: 100,
@@ -273,11 +277,24 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
           <Box
             sx={{
               flexGrow: 1,
-              height: "30vh",
+              height: "55vh", // увеличена высота модального контента
               px: 2,
               color: theme.palette.text.primary,
               overflowY: "auto",
               scrollBehavior: "smooth",
+              "&::-webkit-scrollbar": {
+                width: 8,
+                backgroundColor: theme.palette.background.paper,
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor:
+                  theme.palette.mode === "dark" ? "#444654" : "#b3b3b3",
+                borderRadius: 4,
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                backgroundColor:
+                  theme.palette.mode === "dark" ? "#303030" : "#a0a0a0",
+              },
             }}
           >
             {renderContent()}
