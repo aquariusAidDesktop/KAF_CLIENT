@@ -2,9 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface TypewriterProps {
-  /** Текущая порция текста (partial или финальная), которую нужно показать */
   text: string;
-  /** Скорость печати (мс на один символ) */
   speed?: number;
 }
 

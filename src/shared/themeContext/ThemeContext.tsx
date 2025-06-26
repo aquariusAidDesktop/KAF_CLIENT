@@ -49,18 +49,18 @@ export default function ToggleColorMode({
   );
 
   const darkCustomColors = {
-    blockquoteBg: "#0DE6BE",
-    codeBg: "#0DE6BE",
-    tableHeaderBg: "#333",
+    blockquoteBg: "#2C3E50",
+    codeBg: "#1E293B",
+    tableHeaderBg: "#374151",
     assistantBackground: "#242633",
     userBackground: "#444654",
     controlPanelBackground: "#303030",
   };
 
   const lightCustomColors = {
-    blockquoteBg: "#e6e6e6",
-    codeBg: "#4d4d4d",
-    tableHeaderBg: "#b3b3b3",
+    blockquoteBg: "#F1F5F9",
+    codeBg: "#334155",
+    tableHeaderBg: "#E2E8F0",
     assistantBackground: "#F7F7F7",
     userBackground: "#F7F7F7",
     controlPanelBackground: "#FFFFFF",

@@ -211,9 +211,10 @@ export default function MarkdownRenderer({
                   backgroundColor: colors.codeBg,
                   borderRadius: "6px",
                   overflowX: "auto",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <code style={{ ...commonCodeStyle, color: "#fff" }} {...props}>
+                <code style={{ ...commonCodeStyle, color: "#E2E8F0" }} {...props}>
                   {children}
                 </code>
               </pre>
@@ -225,9 +226,10 @@ export default function MarkdownRenderer({
               style={{
                 ...commonCodeStyle,
                 backgroundColor: colors.codeBg,
-                color: colors.text,
+                color: "#E2E8F0",
                 padding: "0.2em 0.4em",
                 borderRadius: "4px",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
               }}
               {...props}
             >
