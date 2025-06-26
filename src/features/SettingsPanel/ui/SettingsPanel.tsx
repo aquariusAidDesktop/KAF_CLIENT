@@ -34,6 +34,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/redux/store";
 import { toggleVoiceInput } from "@/shared/redux/slices/voiceSlice";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -62,8 +63,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
 
   const [selected, setSelected] = useState("Общее");
 
-  const handleThemeChange = (e: any) => {
-    const newMode = e.target.value;
+  const handleThemeChange = (e: SelectChangeEvent<"light" | "dark">) => {
+    const newMode = e.target.value as "light" | "dark";
     setThemeMode(newMode);
     if (newMode !== themeModeRedux) {
       toggleColorMode();

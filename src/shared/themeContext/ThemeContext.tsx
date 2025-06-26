@@ -48,68 +48,64 @@ export default function ToggleColorMode({
     [dispatch]
   );
 
-  const darkCustomColors = {
-    blockquoteBg: "#2C3E50",
-    codeBg: "#1E293B",
-    tableHeaderBg: "#374151",
-    assistantBackground: "#242633",
-    userBackground: "#444654",
-    controlPanelBackground: "#303030",
-  };
-
-  const lightCustomColors = {
-    blockquoteBg: "#F1F5F9",
-    codeBg: "#334155",
-    tableHeaderBg: "#E2E8F0",
-    assistantBackground: "#F7F7F7",
-    userBackground: "#F7F7F7",
-    controlPanelBackground: "#FFFFFF",
-  };
-
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-          background: {
-            default: mode === "dark" ? "#0D1117" : "#E8E8EC",
-            paper: mode === "dark" ? "#161B22" : "#FFFFFF",
-          },
-          text: {
-            primary: mode === "dark" ? "#C9D1D9" : "#111827",
-            secondary: "#8B949E",
-            disabled: "#484F58",
-          },
-          primary: {
-            main: "#0DE6BE",
-            light: "#3B82F6",
-            dark: "#0DE6BE",
-          },
-          secondary: {
-            main: "#0DE6BE",
-            light: "#58A6FF",
-            dark: "#1C4F9B",
-          },
-          divider: "#30363D",
-          error: {
-            main: "#DA3633",
-            light: "#FF7B72",
-            dark: "#A91511",
-          },
-          warning: {
-            main: "#E3B341",
-          },
-          success: {
-            main: "#2EA043",
-          },
-          info: {
-            main: "#58A6FF",
-          },
+  const theme = React.useMemo(() => {
+    const darkCustomColors = {
+        blockquoteBg: "#2C3E50",
+        codeBg: "#1E293B",
+        tableHeaderBg: "#374151",
+        assistantBackground: "#242633",
+        userBackground: "#444654",
+        controlPanelBackground: "#303030",
+      },
+      lightCustomColors = {
+        blockquoteBg: "#F1F5F9",
+        codeBg: "#334155",
+        tableHeaderBg: "#E2E8F0",
+        assistantBackground: "#F7F7F7",
+        userBackground: "#F7F7F7",
+        controlPanelBackground: "#FFFFFF",
+      };
+    return createTheme({
+      palette: {
+        mode,
+        background: {
+          default: mode === "dark" ? "#0D1117" : "#E8E8EC",
+          paper: mode === "dark" ? "#161B22" : "#FFFFFF",
         },
-        customColors: mode === "dark" ? darkCustomColors : lightCustomColors,
-      }),
-    [mode]
-  );
+        text: {
+          primary: mode === "dark" ? "#C9D1D9" : "#111827",
+          secondary: "#8B949E",
+          disabled: "#484F58",
+        },
+        primary: {
+          main: "#0DE6BE",
+          light: "#3B82F6",
+          dark: "#0DE6BE",
+        },
+        secondary: {
+          main: "#0DE6BE",
+          light: "#58A6FF",
+          dark: "#1C4F9B",
+        },
+        divider: "#30363D",
+        error: {
+          main: "#DA3633",
+          light: "#FF7B72",
+          dark: "#A91511",
+        },
+        warning: {
+          main: "#E3B341",
+        },
+        success: {
+          main: "#2EA043",
+        },
+        info: {
+          main: "#58A6FF",
+        },
+      },
+      customColors: mode === "dark" ? darkCustomColors : lightCustomColors,
+    });
+  }, [mode]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>

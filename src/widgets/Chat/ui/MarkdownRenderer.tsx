@@ -3,6 +3,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import type { CSSProperties } from "react";
 import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
 
 interface MarkdownRendererProps {
   content: string;
@@ -152,17 +153,27 @@ export default function MarkdownRenderer({
             {...props}
           />
         ),
-        img: ({ ...props }) => (
-          <img
-            style={{
-              maxWidth: "100%",
-              borderRadius: "5px",
-              margin: "0.5em 0",
-            }}
-            alt=""
-            {...props}
-          />
-        ),
+        img: ({ ...props }) => {
+          let width = 400;
+          let height = 300;
+          if (typeof props.width === "number") width = props.width;
+          if (typeof props.height === "number") height = props.height;
+          const { width: _w, height: _h, ...rest } = props;
+          return (
+            <Image
+              style={{
+                maxWidth: "100%",
+                borderRadius: "5px",
+                margin: "0.5em 0",
+              }}
+              alt=""
+              width={width}
+              height={height}
+              src={typeof props.src === "string" ? props.src : ""}
+              {...rest}
+            />
+          );
+        },
         table: ({ ...props }) => (
           <div style={{ overflowX: "auto", margin: "1em 0" }}>
             <table

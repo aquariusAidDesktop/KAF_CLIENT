@@ -20,6 +20,8 @@ const rootReducer = combineReducers({
   voice: voiceReducer,
 });
 
+export type RootState = ReturnType<typeof rootReducer>;
+
 const persistConfig = {
   key: "root",
   storage,
@@ -44,5 +46,4 @@ if (typeof window !== "undefined") {
   store.dispatch(loadUserFromStorage());
 }
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
